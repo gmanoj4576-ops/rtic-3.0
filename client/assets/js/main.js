@@ -157,13 +157,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Bulletproof copy helper
+  function copyTextToClipboard(text, successCallback) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(successCallback).catch(err => {
+        fallbackCopyText(text, successCallback);
+      });
+    } else {
+      fallbackCopyText(text, successCallback);
+    }
+  }
+
+  function fallbackCopyText(text, successCallback) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.top = "0";
+    textArea.style.left = "0";
+    textArea.style.position = "fixed";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    try {
+      const successful = document.execCommand('copy');
+      if (successful && successCallback) {
+        successCallback();
+      }
+    } catch (err) {
+      console.error("Fallback copy failed:", err);
+    }
+    document.body.removeChild(textArea);
+  }
+
   // Copy button click-to-copy utility
   document.addEventListener("click", (e) => {
     const btn = e.target.closest(".btn-copy-field");
     if (btn) {
       const targetId = btn.getAttribute("data-copy-target");
       const textToCopy = document.getElementById(targetId).innerText.trim();
-      navigator.clipboard.writeText(textToCopy).then(() => {
+      
+      copyTextToClipboard(textToCopy, () => {
         const originalHtml = btn.innerHTML;
         btn.innerHTML = `<i class="fa-solid fa-check text-success"></i>`;
         setTimeout(() => {
