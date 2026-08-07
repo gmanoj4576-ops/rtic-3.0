@@ -693,3 +693,22 @@ h1, h2, h3, h4, h5, h6 {
   border-color: transparent !important;
   box-shadow: 0 0 10px rgba(255, 0, 85, 0.35);
 }
+
+/* Custom Highlight Glowing Cards for Organizers & Faculty */
+.border-glow-organizer {
+  border: 1px solid #00f2fe !important;
+  box-shadow: 0 0 20px 0 rgba(0, 242, 254, 0.18);
+  transition: all 0.3s ease;
+}
+.border-glow-organizer:hover {
+  box-shadow: 0 0 30px 0 rgba(0, 242, 254, 0.45);
+}
+
+.border-glow-faculty {
+  border: 1px solid #ff3377 !important;
+  box-shadow: 0 0 20px 0 rgba(255, 51, 119, 0.18);
+  transition: all 0.3s ease;
+}
+.border-glow-faculty:hover {
+  box-shadow: 0 0 30px 0 rgba(255, 51, 119, 0.45);
+}
