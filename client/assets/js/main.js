@@ -157,19 +157,21 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Copy UPI ID trigger
-  const copyUpiBtn = document.getElementById("copy-upi-btn");
-  if (copyUpiBtn) {
-    copyUpiBtn.addEventListener("click", () => {
-      const upiText = document.getElementById("upi-id-text").innerText;
-      navigator.clipboard.writeText(upiText).then(() => {
-        copyUpiBtn.innerHTML = `<i class="fa-solid fa-check"></i> Copied`;
+  // Copy button click-to-copy utility
+  document.addEventListener("click", (e) => {
+    const btn = e.target.closest(".btn-copy-field");
+    if (btn) {
+      const targetId = btn.getAttribute("data-copy-target");
+      const textToCopy = document.getElementById(targetId).innerText.trim();
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-check text-success"></i>`;
         setTimeout(() => {
-          copyUpiBtn.innerHTML = `<i class="fa-solid fa-copy"></i> Copy`;
+          btn.innerHTML = originalHtml;
         }, 1500);
       });
-    });
-  }
+    }
+  });
 
   // ----------------------------------------------------
   // 7. Multi-step Form & Draft Autosave (register.html only)

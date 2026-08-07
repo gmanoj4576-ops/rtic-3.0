@@ -270,70 +270,66 @@
                 </div>
 
                 <div class="col-md-6">
-                  <div class="glass-card p-3 border-glow">
-                    <!-- Nav Tabs -->
-                    <ul class="nav nav-pills nav-fill mb-3" id="paymentTabs" role="tablist" style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 4px;">
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link active py-2 text-glow font-outfit btn-sm" id="upi-tab" data-bs-toggle="pill" data-bs-target="#pills-upi" type="button" role="tab" aria-controls="pills-upi" aria-selected="true" style="border-radius: 8px;">
-                          <i class="fa-solid fa-qrcode me-2"></i> UPI QR Code
-                        </button>
-                      </li>
-                      <li class="nav-item" role="presentation">
-                        <button class="nav-link py-2 font-outfit btn-sm" id="bank-tab" data-bs-toggle="pill" data-bs-target="#pills-bank" type="button" role="tab" aria-controls="pills-bank" aria-selected="false" style="border-radius: 8px;">
-                          <i class="fa-solid fa-building-columns me-2"></i> Bank Details
-                        </button>
-                      </li>
-                    </ul>
+                  <div class="glass-card p-4 border-glow h-100">
+                    <h5 class="font-outfit text-white mb-3"><i class="fa-solid fa-building-columns text-cyan me-2"></i>Bank Details for Transfer</h5>
+                    <p class="text-muted small mb-3">Copy these bank details to make a transfer via <strong>Paytm</strong>, GPay, PhonePe, or Net Banking:</p>
 
-                    <!-- Tab Content -->
-                    <div class="tab-content" id="paymentTabsContent">
-                      <!-- UPI Tab -->
-                      <div class="tab-pane fade show active text-center" id="pills-upi" role="tabpanel" aria-labelledby="upi-tab">
-                        <div class="qr-container d-inline-block border border-dark rounded p-2 mb-3 bg-dark-tint" style="background: #ffffff; border-radius: 12px !important; padding: 8px !important;">
-                          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=ruraltech@upi%26pn=RTIC3.0%26am=1400%26cu=INR" alt="UPI QR Code" id="payment-qr-image" class="img-fluid rounded" style="width: 130px; height: 130px;">
+                    <div class="bank-details-list small text-start">
+                      <div class="d-flex justify-content-between align-items-center border-bottom border-dark py-2" style="border-color: rgba(255,255,255,0.06) !important;">
+                        <span class="text-muted">Account Name:</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <strong class="text-white" id="copy-acc-name">IEEE STUDENT BRANCH</strong>
+                          <button type="button" class="btn btn-sm text-cyan p-0 btn-copy-field" data-copy-target="copy-acc-name" title="Copy Account Name" style="background:none; border:none;">
+                            <i class="fa-solid fa-copy"></i>
+                          </button>
                         </div>
-                        <div class="p-2 bg-dark-input border border-dark rounded d-flex justify-content-between align-items-center text-start">
-                          <div>
-                            <small class="text-muted d-block" style="font-size: 11px;">UPI ID</small>
-                            <span class="font-outfit text-cyan fw-bold" id="upi-id-text" style="font-size: 14px;">ruraltech@upi</span>
-                          </div>
-                          <button type="button" class="btn btn-sm btn-outline-custom px-3" id="copy-upi-btn">
-                            <i class="fa-solid fa-copy"></i> Copy
+                      </div>
+                      
+                      <div class="d-flex justify-content-between align-items-center border-bottom border-dark py-2" style="border-color: rgba(255,255,255,0.06) !important;">
+                        <span class="text-muted">Account No:</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <strong class="text-white font-monospace text-glow" id="copy-acc-num">335602011000121</strong>
+                          <button type="button" class="btn btn-sm text-cyan p-0 btn-copy-field" data-copy-target="copy-acc-num" title="Copy Account Number" style="background:none; border:none;">
+                            <i class="fa-solid fa-copy"></i>
                           </button>
                         </div>
                       </div>
 
-                      <!-- Bank Tab -->
-                      <div class="tab-pane fade" id="pills-bank" role="tabpanel" aria-labelledby="bank-tab">
-                        <div class="bank-details-list small text-start p-2">
-                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
-                            <span class="text-muted">Account Name:</span>
-                            <strong class="text-white">IEEE STUDENT BRANCH</strong>
-                          </div>
-                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
-                            <span class="text-muted">Account No:</span>
-                            <strong class="text-white font-monospace text-glow">335602011000121</strong>
-                          </div>
-                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
-                            <span class="text-muted">Bank Name:</span>
-                            <strong class="text-white">UNION BANK OF INDIA</strong>
-                          </div>
-                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
-                            <span class="text-muted">Branch Name:</span>
-                            <strong class="text-white">KRISHNANKOIL, WATRAP</strong>
-                          </div>
-                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
-                            <span class="text-muted">IFSC Code:</span>
-                            <strong class="text-white font-monospace text-glow">UBIN0562734</strong>
-                          </div>
-                          <div class="d-flex justify-content-between py-1.5">
-                            <span class="text-muted">MICR Code:</span>
-                            <strong class="text-white font-monospace">626026503</strong>
-                          </div>
+                      <div class="d-flex justify-content-between align-items-center border-bottom border-dark py-2" style="border-color: rgba(255,255,255,0.06) !important;">
+                        <span class="text-muted">IFSC Code:</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <strong class="text-white font-monospace text-glow" id="copy-ifsc">UBIN0562734</strong>
+                          <button type="button" class="btn btn-sm text-cyan p-0 btn-copy-field" data-copy-target="copy-ifsc" title="Copy IFSC Code" style="background:none; border:none;">
+                            <i class="fa-solid fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="d-flex justify-content-between align-items-center border-bottom border-dark py-2" style="border-color: rgba(255,255,255,0.06) !important;">
+                        <span class="text-muted">Bank Name:</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <strong class="text-white" id="copy-bank-name">UNION BANK OF INDIA</strong>
+                          <button type="button" class="btn btn-sm text-cyan p-0 btn-copy-field" data-copy-target="copy-bank-name" title="Copy Bank Name" style="background:none; border:none;">
+                            <i class="fa-solid fa-copy"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div class="d-flex justify-content-between align-items-center border-bottom border-dark py-2" style="border-color: rgba(255,255,255,0.06) !important;">
+                        <span class="text-muted">Branch Name:</span>
+                        <strong class="text-white text-end">KRISHNANKOIL, WATRAP</strong>
+                      </div>
+
+                      <div class="d-flex justify-content-between align-items-center py-2">
+                        <span class="text-muted">MICR Code:</span>
+                        <div class="d-flex align-items-center gap-2">
+                          <strong class="text-white font-monospace" id="copy-micr">626026503</strong>
+                          <button type="button" class="btn btn-sm text-cyan p-0 btn-copy-field" data-copy-target="copy-micr" title="Copy MICR Code" style="background:none; border:none;">
+                            <i class="fa-solid fa-copy"></i>
+                          </button>
                         </div>
                       </div>
                     </div>
-
                   </div>
                 </div>
               </div>
