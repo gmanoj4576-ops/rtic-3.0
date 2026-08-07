@@ -193,13 +193,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const btn = e.target.closest(".btn-copy-field");
     if (btn) {
       const targetId = btn.getAttribute("data-copy-target");
-      const textToCopy = document.getElementById(targetId).innerText.trim();
+      const targetEl = document.getElementById(targetId);
+      if (!targetEl) return;
+      const textToCopy = targetEl.innerText.trim();
       
       copyTextToClipboard(textToCopy, () => {
         const originalHtml = btn.innerHTML;
-        btn.innerHTML = `<i class="fa-solid fa-check text-success"></i>`;
+        const originalClass = btn.className;
+        
+        btn.innerHTML = `<i class="fa-solid fa-check me-1"></i>Copied!`;
+        if (btn.classList.contains("btn-outline-info")) {
+          btn.classList.remove("btn-outline-info");
+          btn.classList.add("btn-success");
+        }
+        
         setTimeout(() => {
           btn.innerHTML = originalHtml;
+          btn.className = originalClass;
         }, 1500);
       });
     }
