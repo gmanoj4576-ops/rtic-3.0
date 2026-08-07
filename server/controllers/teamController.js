@@ -181,7 +181,7 @@ const sendNotificationEmail = async (team, type = 'received') => {
             </tr>
           </table>
 
-          <p>Please double-check your transaction ID and verify that your payment screenshot matches the ₹1400 requirement. You can register again or contact us at <a href="mailto:support@rtic.org" style="color: #58a6ff;">support@rtic.org</a> for support.</p>
+          <p>Please double-check your transaction ID and verify that your payment screenshot matches the calculated registration fee. You can register again or contact us at <a href="mailto:ieeeraskare@gmail.com" style="color: #58a6ff;">ieeeraskare@gmail.com</a> for support.</p>
           <div style="text-align: center; margin-top: 40px; border-top: 1px solid #30363d; padding-top: 20px; font-size: 12px; color: #8b949e;">
             <p>© 2026 Rural Tech Innovation Challenge 3.0. All rights reserved.</p>
           </div>
