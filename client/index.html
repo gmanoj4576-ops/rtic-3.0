@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description"
+    content="Official portal for Rural Tech Innovation Challenge 3.0. Showcase your technology innovations to solve rural challenges.">
+  <meta name="author" content="IEEE Student Branch & RTIC Team">
+  <title>Rural Tech Innovation Challenge 3.0</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <!-- CDNs: Bootstrap 5, FontAwesome, AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+
+  <!-- FOUC Prevention Script -->
+  <script>
+    {
+      const colorScheme = localStorage.getItem("color-scheme");
+      if (colorScheme) {
+        document.documentElement.setAttribute('data-theme', colorScheme);
+      }
+    }
+  </script>
+</head>
+
+<body>
+
+  <!-- Particle Background -->
+  <div id="particles-js"></div>
+
+  <!-- Cursor Glow Overlay -->
+  <div id="cursor-glow"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-content text-center">
+      <div class="spinner-grow text-info" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <h4 class="mt-3 text-glow font-outfit">RTIC 3.0</h4>
+      <p class="text-muted small">Loading futuristic environment...</p>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-nav">
+    <div class="container">
+      <a class="navbar-brand font-outfit fw-bold" href="#">
+        <i class="fa-solid fa-charging-station text-cyan me-2 animate-pulse"></i>RTIC <span
+          class="text-gradient">3.0</span>
+      </a>
+      <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto align-items-center">
+          <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link" href="#benefits">Benefits</a></li>
+          <li class="nav-item"><a class="nav-link" href="#rules">Rules</a></li>
+          <li class="nav-item"><a class="nav-link" href="#timeline">Timeline</a></li>
+          <li class="nav-item"><a class="nav-link" href="#committee">Committee</a></li>
+          <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+          <li class="nav-item ms-lg-2">
+            <button id="theme-toggle" class="btn btn-theme-toggle" aria-label="Toggle Theme">
+              <i class="fa-solid fa-moon"></i>
+            </button>
+          </li>
+          <li class="nav-item ms-lg-3">
+            <a href="/register.html" class="btn btn-glow font-outfit py-2 px-4 mt-2 mt-lg-0">Register Now</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero-section d-flex align-items-center relative" id="hero">
+    <div class="container text-center text-white relative z-2 mt-5">
+      <!-- Partner Logos -->
+      <div class="d-flex justify-content-center align-items-center gap-3 gap-md-4 mb-4 flex-wrap" data-aos="fade-down">
+        <div class="glass-card d-flex align-items-center justify-content-center border-glow"
+          style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+          <img src="/assets/images/logo1.jpeg" alt="Logo 1"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        </div>
+        <div class="glass-card d-flex align-items-center justify-content-center border-glow"
+          style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+          <img src="/assets/images/logo2.jpeg" alt="Logo 2"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        </div>
+        <div class="glass-card d-flex align-items-center justify-content-center border-glow"
+          style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+          <img src="/assets/images/logo3.jpeg" alt="Logo 3"
+            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+        </div>
+      </div>
+      <div class="badge-premium mb-3" data-aos="fade-down">
+        <i class="fa-solid fa-calendar-check text-cyan me-2"></i>IEEE Approved Hackathon
+      </div>
+      <h1 class="hero-title font-outfit fw-extrabold text-glow" data-aos="zoom-in" data-aos-delay="100">
+        Rural Tech Innovation <br><span class="text-gradient">Challenge 3.0</span>
+      </h1>
+      <p class="hero-tagline lead text-muted font-inter mx-auto mt-3" style="max-width: 700px;" data-aos="fade-up"
+        data-aos-delay="200">
+        Empowering young minds to engineer scalable technological solutions for primary agricultural, sustainability,
+        and development challenges in rural India.
+      </p>
+
+      <!-- Countdown Timer -->
+      <div class="row justify-content-center my-5" data-aos="fade-up" data-aos-delay="300">
+        <div class="col-12">
+          <p class="text-uppercase tracking-wider font-outfit text-cyan mb-3 fw-bold">Registrations Close In</p>
+        </div>
+        <div class="col-auto">
+          <div class="countdown-card">
+            <span id="days" class="time-num">00</span>
+            <span class="time-label">Days</span>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="countdown-card">
+            <span id="hours" class="time-num">00</span>
+            <span class="time-label">Hours</span>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="countdown-card">
+            <span id="minutes" class="time-num">00</span>
+            <span class="time-label">Mins</span>
+          </div>
+        </div>
+        <div class="col-auto">
+          <div class="countdown-card">
+            <span id="seconds" class="time-num">00</span>
+            <span class="time-label">Secs</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4" data-aos="fade-up"
+        data-aos-delay="400">
+        <a href="/register.html" class="btn btn-glow btn-lg px-5 py-3 font-outfit">
+          <i class="fa-solid fa-user-plus me-2"></i>Register Your Team
+        </a>
+        <a href="#about" class="btn btn-outline-custom btn-lg px-5 py-3 font-outfit">
+          Learn More <i class="fa-solid fa-arrow-down ms-2"></i>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- About Section -->
+  <section id="about" class="py-5 section-padding">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0" data-aos="fade-right">
+          <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i
+              class="fa-solid fa-circle-nodes me-2"></i>About The Challenge</h6>
+          <h2 class="font-outfit text-white fw-bold mb-4">Bridging the Gap Between Technology & Rural Ecosystems</h2>
+          <p class="text-muted leading-relaxed">
+            The Rural Tech Innovation Challenge (RTIC) 3.0 is a national-level initiative designed to bring
+            technological interventions to India's rural areas. Participants are encouraged to submit hardware and
+            software solutions focused on improving agricultural yields, rural electrification, healthcare delivery,
+            clean water supply, and waste management.
+          </p>
+          <p class="text-muted leading-relaxed">
+            Organized in association with IEEE, RTIC provides a competitive platform for student developers, engineers,
+            and tech-enthusiasts to build working prototypes, undergo professional mentorship, and present solutions to
+            industry experts and venture capital partners.
+          </p>
+        </div>
+        <div class="col-lg-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="about-card-wrapper p-2">
+            <div class="glass-card p-4 text-center">
+              <div class="row g-4">
+                <div class="col-6">
+                  <div class="metric-block p-3">
+                    <h3 class="font-outfit text-gradient fw-bold">National</h3>
+                    <p class="text-muted mb-0 small">Exposure Scale</p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="metric-block p-3">
+                    <h3 class="font-outfit text-gradient fw-bold">210</h3>
+                    <p class="text-muted mb-0 small">Expected Teams</p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="metric-block p-3">
+                    <h3 class="font-outfit text-gradient fw-bold">1-on-1</h3>
+                    <p class="text-muted mb-0 small">Mentorship Sessions</p>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="metric-block p-3">
+                    <h3 class="font-outfit text-gradient fw-bold">Hybrid</h3>
+                    <p class="text-muted mb-0 small">Hackathon Format</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Benefits Section -->
+  <section id="benefits" class="py-5 bg-dark-tint section-padding">
+    <div class="container py-5 text-center">
+      <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i class="fa-solid fa-gift me-2"></i>What's
+        In It For You</h6>
+      <h2 class="font-outfit text-white fw-bold mb-5">Benefits & Perks</h2>
+
+      <div class="row g-4">
+        <div class="col-md-4" data-aos="fade-up">
+          <div class="glass-card hover-lift p-4 h-100">
+            <div class="benefit-icon mb-3">
+              <i class="fa-solid fa-graduation-cap text-cyan fa-2x"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-3">Professional Mentorship</h4>
+            <p class="text-muted small">Gain feedback and technical support from senior industry experts, researchers,
+              and IEEE mentors.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+          <div class="glass-card hover-lift p-4 h-100">
+            <div class="benefit-icon mb-3">
+              <i class="fa-solid fa-file-invoice-dollar text-purple fa-2x"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-3">Funding & Incubation</h4>
+            <p class="text-muted small">Top teams stand a chance to secure direct incubation opportunities, startup
+              grants, and seed funding support.</p>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
+          <div class="glass-card hover-lift p-4 h-100">
+            <div class="benefit-icon mb-3">
+              <i class="fa-solid fa-certificate text-blue fa-2x"></i>
+            </div>
+            <h4 class="font-outfit text-white mb-3">IEEE Certification</h4>
+            <p class="text-muted small">All members of registered teams receive a recognized digital certificate of
+              participation from IEEE.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rules Section -->
+  <section id="rules" class="py-5 section-padding">
+    <div class="container py-5">
+      <div class="row align-items-center">
+        <div class="col-lg-5 mb-4 mb-lg-0" data-aos="fade-right">
+          <div class="glass-card border-glow p-4 text-center">
+            <i class="fa-solid fa-triangle-exclamation text-warning fa-3x mb-3 animate-pulse"></i>
+            <h3 class="font-outfit text-white mb-3">Registration Constraint</h3>
+            <p class="text-muted">To ensure fair competition and standardized team structure, please read the team
+              sizing rules carefully.</p>
+            <div class="badge bg-danger p-2 text-uppercase tracking-wider">upto 4 Members per Team</div>
+          </div>
+        </div>
+        <div class="col-lg-7" data-aos="fade-left" data-aos-delay="200">
+          <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i
+              class="fa-solid fa-scale-balanced me-2"></i>Rules & Guidelines</h6>
+          <h2 class="font-outfit text-white fw-bold mb-4">Event Participation Rules</h2>
+          <ul class="list-unstyled rules-list text-muted">
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fa-solid fa-check text-cyan me-3 mt-1"></i>
+              <span>Only the <strong>Team Leader</strong> can create and submit the team registration.</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fa-solid fa-check text-cyan me-3 mt-1"></i>
+              <span>Each team must contain exactly <strong>4 members</strong> (1 Leader + 3 Members). Fewer or more
+                members are strictly disallowed.</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fa-solid fa-check text-cyan me-3 mt-1"></i>
+              <span>A registration fee of <strong>₹350 per member</strong> (Totaling <strong>₹1400 per team</strong>) is
+                mandatory.</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fa-solid fa-check text-cyan me-3 mt-1"></i>
+              <span>Any student currently enrolled in an undergraduate or postgraduate program in any college/university
+                can register.</span>
+            </li>
+            <li class="mb-3 d-flex align-items-start">
+              <i class="fa-solid fa-check text-cyan me-3 mt-1"></i>
+              <span>All team details, payment transaction IDs, and receipt screenshots are verified by the admin panel.
+                Incorrect/duplicate details will trigger a rejection.</span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Timeline Section -->
+  <section id="timeline" class="py-5 bg-dark-tint section-padding">
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i
+            class="fa-solid fa-route me-2"></i>Roadmap</h6>
+        <h2 class="font-outfit text-white fw-bold">Event Timeline</h2>
+      </div>
+
+      <!-- Timeline component -->
+      <div class="timeline-container relative">
+        <div class="timeline-line"></div>
+
+        <!-- Registrations Open -->
+        <div class="timeline-item mb-5" data-aos="fade-up">
+          <div class="timeline-dot"></div>
+          <div class="glass-card p-4 timeline-content ms-md-auto me-md-4 text-md-end">
+            <span class="text-cyan font-outfit fw-bold">August 1, 2026 (Saturday)</span>
+            <h4 class="font-outfit text-white mt-1">Registrations Open</h4>
+            <p class="text-muted small mb-0">Submit team information, upload proof of payment, and secure a spot in the hackathon.</p>
+          </div>
+        </div>
+
+        <!-- Registrations Close -->
+        <div class="timeline-item mb-5 shadow-glow-hover" data-aos="fade-up" data-aos-delay="100">
+          <div class="timeline-dot bg-cyan"></div>
+          <div class="glass-card p-4 timeline-content me-md-auto ms-md-4">
+            <span class="text-cyan font-outfit fw-bold">August 12, 2026 (Wednesday)</span>
+            <h4 class="font-outfit text-white mt-1">Registrations Close</h4>
+            <p class="text-muted small mb-0">Portal closes for entries. No late submissions will be processed. Verification finalizes.</p>
+          </div>
+        </div>
+
+        <!-- Round 1 -->
+        <div class="timeline-item mb-5" data-aos="fade-up" data-aos-delay="200">
+          <div class="timeline-dot"></div>
+          <div class="glass-card p-4 timeline-content ms-md-auto me-md-4 text-md-end">
+            <span class="text-cyan font-outfit fw-bold">August 15, 2026 (Saturday)</span>
+            <h4 class="font-outfit text-white mt-1">Round 1: Ideation & Problem Identification</h4>
+            <p class="text-muted small mb-0">Evaluation duration: 15 minutes/team (10 mins presentation + 5 mins Q&A).</p>
+          </div>
+        </div>
+
+        <!-- Round 2 -->
+        <div class="timeline-item mb-5 shadow-glow-hover" data-aos="fade-up" data-aos-delay="250">
+          <div class="timeline-dot bg-cyan"></div>
+          <div class="glass-card p-4 timeline-content me-md-auto ms-md-4">
+            <span class="text-cyan font-outfit fw-bold">August 29, 2026 (Saturday)</span>
+            <h4 class="font-outfit text-white mt-1">Round 2: Prototype Review & Mentoring</h4>
+            <p class="text-muted small mb-0">Evaluation duration: 20 minutes/team (12 mins demo + 8 mins discussion).</p>
+          </div>
+        </div>
+
+        <!-- Grand Finale -->
+        <div class="timeline-item mb-5" data-aos="fade-up" data-aos-delay="300">
+          <div class="timeline-dot bg-purple"></div>
+          <div class="glass-card p-4 timeline-content ms-md-auto me-md-4 text-md-end">
+            <span class="text-purple font-outfit fw-bold">September 05, 2026 (Saturday)</span>
+            <h4 class="font-outfit text-white mt-1">Grand Finale: Prototype Demonstration & Evaluation</h4>
+            <p class="text-muted small mb-0">Venue: 8th Block Seminar Hall. Duration: 25 minutes/team (15 mins demo + 10 mins jury interaction).</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Committee Section -->
+  <section id="committee" class="py-5 bg-dark-tint section-padding">
+    <div class="container py-5 text-center">
+      <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i class="fa-solid fa-people-group me-2"></i>Organizing Committee</h6>
+      <h2 class="font-outfit text-white fw-bold mb-5">Event Organizers & Coordinators</h2>
+
+      <!-- Row 1: Event Organizers -->
+      <div class="row g-4 justify-content-center mb-5">
+        <div class="col-12">
+          <h4 class="font-outfit text-glow text-cyan mb-3">Event Organizers</h4>
+        </div>
+        <div class="col-md-5" data-aos="zoom-in">
+          <div class="glass-card p-4 border-glow">
+            <i class="fa-solid fa-user-tie text-cyan fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Dr. P. Deepalakshmi</h5>
+            <p class="text-muted small mb-0">Dean, School of Computing</p>
+            <p class="text-cyan small">Kalasalingam Academy of Research and Education</p>
+          </div>
+        </div>
+        <div class="col-md-5" data-aos="zoom-in" data-aos-delay="100">
+          <div class="glass-card p-4 border-glow">
+            <i class="fa-solid fa-user-tie text-cyan fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Dr. R. Raja Subramanian</h5>
+            <p class="text-muted small mb-1">HOD - CSE</p>
+            <p class="text-purple small mb-0">IEEE SB Counsellor & IEEE RAS Chapter Advisor</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Faculty Coordinators -->
+      <div class="row g-4 justify-content-center mb-5">
+        <div class="col-12">
+          <h4 class="font-outfit text-glow text-purple mb-3">Faculty Coordinators</h4>
+        </div>
+        <div class="col-md-5" data-aos="zoom-in">
+          <div class="glass-card p-4 border-glow-purple">
+            <i class="fa-solid fa-user-shield text-purple fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Mrs. R. Syed Ali Fathima</h5>
+            <p class="text-muted small mb-1">Assistant Professor / CSE</p>
+            <p class="text-cyan small mb-0">IEEE RAS Co-Ordinator</p>
+          </div>
+        </div>
+        <div class="col-md-5" data-aos="zoom-in" data-aos-delay="100">
+          <div class="glass-card p-4 border-glow-purple">
+            <i class="fa-solid fa-user-shield text-purple fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Mr. V. Aravind Rajan</h5>
+            <p class="text-muted small mb-1">Faculty Incharge</p>
+            <p class="text-cyan small mb-0">Kalasalingam Academy of Research and Education</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 3: Student Coordinators -->
+      <div class="row g-4 justify-content-center">
+        <div class="col-12">
+          <h4 class="font-outfit text-glow text-warning mb-3">Student Coordinators</h4>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in">
+          <div class="glass-card p-4 border-glow-warning">
+            <i class="fa-solid fa-user-graduate text-warning fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Karteya Reddy</h5>
+            <p class="text-muted small mb-2">Treasurer</p>
+            <a href="tel:+917569671740" class="btn btn-sm btn-outline-custom font-monospace"><i class="fa-solid fa-phone me-2"></i>+91 75696 71740</a>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="100">
+          <div class="glass-card p-4 border-glow-warning">
+            <i class="fa-solid fa-user-graduate text-warning fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Krishna Priya</h5>
+            <p class="text-muted small mb-2">Vice Chair</p>
+            <a href="tel:+918593883504" class="btn btn-sm btn-outline-custom font-monospace"><i class="fa-solid fa-phone me-2"></i>+91 85938 83504</a>
+          </div>
+        </div>
+        <div class="col-md-4" data-aos="zoom-in" data-aos-delay="200">
+          <div class="glass-card p-4 border-glow-warning">
+            <i class="fa-solid fa-user-graduate text-warning fa-2x mb-3"></i>
+            <h5 class="font-outfit text-white mb-1">Kavya</h5>
+            <p class="text-muted small mb-2">Co-Secretary</p>
+            <a href="tel:+918778336138" class="btn btn-sm btn-outline-custom font-monospace"><i class="fa-solid fa-phone me-2"></i>+91 87783 36138</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-5 section-padding">
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i
+            class="fa-solid fa-question me-2"></i>Need Help?</h6>
+        <h2 class="font-outfit text-white fw-bold">Frequently Asked Questions</h2>
+      </div>
+
+      <div class="row justify-content-center">
+        <div class="col-lg-8" data-aos="fade-up">
+          <div class="accordion accordion-custom" id="faqAccordion">
+
+            <div class="accordion-item glass-card mb-3">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed font-outfit" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseOne" aria-expanded="false">
+                  Who is eligible to participate in RTIC 3.0?
+                </button>
+              </h2>
+              <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-muted small">
+                  Any undergraduate or postgraduate student enrolled in engineering, science, or technology majors in
+                  any accredited university or college can register. Cross-college teams are allowed.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item glass-card mb-3">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed font-outfit" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseTwo" aria-expanded="false">
+                  Does our team need exactly 4 members?
+                </button>
+              </h2>
+              <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-muted small">
+                  Yes, each team must have exactly 4 members (1 Team Leader and 3 Members). The validation logic of the
+                  portal will block submissions that contain fewer than 4 members.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item glass-card mb-3">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed font-outfit" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseThree" aria-expanded="false">
+                  How does the registration fee structure work?
+                </button>
+              </h2>
+              <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-muted small">
+                  The registration fee is ₹350 per member. Since every team must have exactly 4 members, the total
+                  registration fee per team is ₹1400. You need to scan the UPI QR code, pay the amount, copy the
+                  transaction ID, and upload the receipt image/PDF in the registration page.
+                </div>
+              </div>
+            </div>
+
+            <div class="accordion-item glass-card mb-3">
+              <h2 class="accordion-header">
+                <button class="accordion-button collapsed font-outfit" type="button" data-bs-toggle="collapse"
+                  data-bs-target="#collapseFour" aria-expanded="false">
+                  Can we edit our registration details after submission?
+                </button>
+              </h2>
+              <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                <div class="accordion-body text-muted small">
+                  Registrations are locked upon submission. If you make a typo, please contact the support team with
+                  your Team ID at support@rtic.org. Admin reviewers have the authority to edit team details upon request
+                  verification.
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="py-5 section-padding">
+    <div class="container py-5">
+      <div class="text-center mb-5">
+        <h6 class="text-cyan text-uppercase tracking-wider font-outfit mb-2"><i
+            class="fa-solid fa-envelope me-2"></i>Reach Out</h6>
+        <h2 class="font-outfit text-white fw-bold">Contact Us</h2>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-md-6" data-aos="fade-right">
+          <div class="glass-card p-4 h-100 border-glow">
+            <h4 class="font-outfit text-white mb-4">Event Headquarters</h4>
+            <div class="d-flex align-items-start mb-3 text-muted">
+              <i class="fa-solid fa-location-dot text-cyan me-3 mt-1 fs-5"></i>
+              <span>IEEE Student Branch Council Room, Block 4, <br>Rural Technology University, Bangalore, Karnataka -
+                560001</span>
+            </div>
+            <div class="d-flex align-items-center mb-3 text-muted">
+              <i class="fa-solid fa-phone text-cyan me-3 fs-5"></i>
+              <span>+91 98765 43210, +91 87654 32109</span>
+            </div>
+            <div class="d-flex align-items-center mb-4 text-muted">
+              <i class="fa-solid fa-envelope text-cyan me-3 fs-5"></i>
+              <span>support@rtic.org, ieee-rtic@university.edu</span>
+            </div>
+            <div class="social-links mt-4 pt-3 border-top border-dark">
+              <a href="#" class="btn btn-sm btn-outline-custom me-2"><i class="fa-brands fa-linkedin-in"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-custom me-2"><i class="fa-brands fa-instagram"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-custom me-2"><i class="fa-brands fa-x-twitter"></i></a>
+              <a href="#" class="btn btn-sm btn-outline-custom"><i class="fa-brands fa-github"></i></a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
+          <div class="glass-card p-4 h-100">
+            <h4 class="font-outfit text-white mb-4">Quick Query Form</h4>
+            <form id="contact-form">
+              <div class="row g-3">
+                <div class="col-12">
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary"
+                    placeholder="Your Name" required>
+                </div>
+                <div class="col-12">
+                  <input type="email" class="form-control bg-dark-input text-white border-secondary"
+                    placeholder="Your Email Address" required>
+                </div>
+                <div class="col-12">
+                  <textarea class="form-control bg-dark-input text-white border-secondary" rows="4"
+                    placeholder="Your Query / Message" required></textarea>
+                </div>
+                <div class="col-12">
+                  <button type="submit" class="btn btn-glow font-outfit w-100 py-2">Send Message</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="py-4 border-top border-dark bg-dark-tint">
+    <div
+      class="container text-center text-md-between d-flex flex-column flex-md-row align-items-center justify-content-between">
+      <p class="text-muted small mb-0">© 2026 Rural Tech Innovation Challenge 3.0. All Rights Reserved. IEEE Student
+        Branch.</p>
+      <div class="footer-links mt-2 mt-md-0 small">
+        <a href="/admin/" class="text-cyan me-3 text-decoration-none"><i class="fa-solid fa-lock me-1"></i>Admin
+          Dashboard</a>
+        <a href="#about" class="text-muted me-3 text-decoration-none">About</a>
+        <a href="#rules" class="text-muted text-decoration-none">Guidelines</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="btn btn-glow rounded-circle" aria-label="Back to Top">
+    <i class="fa-solid fa-chevron-up"></i>
+  </button>
+
+  <!-- CDNs: Bootstrap Bundle, Particles.js, AOS, GSAP, Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Custom scripts -->
+  <script src="/assets/js/main.js?v=3.1"></script>
+</body>
+
+</html>

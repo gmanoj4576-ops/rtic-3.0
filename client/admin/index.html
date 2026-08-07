@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>Admin Dashboard | RTIC 3.0</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CDNs: Bootstrap 5, FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  
+  <style>
+    /* Admin specific overrides for print and layout */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #print-area, #print-area * {
+        visibility: visible;
+      }
+      #print-area {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        color: #000 !important;
+        background: #fff !important;
+      }
+      .btn, .no-print, #main-nav, .theme-toggle {
+        display: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-dark min-vh-100 py-4">
+
+  <!-- Particle Background -->
+  <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+  <!-- LOGIN PANEL overlay -->
+  <div id="admin-login-overlay" class="d-flex align-items-center justify-content-center min-vh-100 position-fixed w-100 h-100 top-0 start-0 z-3 bg-dark">
+    <div class="glass-card p-4 p-md-5 text-center shadow-lg border-glow" style="width: 100%; max-width: 420px;">
+      <i class="fa-solid fa-shield-halved text-cyan fa-3x mb-3 animate-pulse"></i>
+      <h3 class="font-outfit text-white fw-bold mb-2">RTIC 3.0 Admin</h3>
+      <p class="text-muted small mb-4">Please log in to access the control panel</p>
+      
+      <form id="admin-login-form">
+        <div class="form-floating mb-3">
+          <input type="text" class="form-control bg-dark-input text-white border-secondary" id="loginUsername" placeholder="Username" required>
+          <label for="loginUsername" class="text-muted">Username</label>
+        </div>
+        <div class="form-floating mb-4">
+          <input type="password" class="form-control bg-dark-input text-white border-secondary" id="loginPassword" placeholder="Password" required>
+          <label for="loginPassword" class="text-muted">Password</label>
+        </div>
+        <button type="submit" class="btn btn-glow font-outfit w-100 py-3">
+          Authenticate <i class="fa-solid fa-key ms-2"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN DASHBOARD CONTENT (hidden by default until login) -->
+  <div id="admin-dashboard" class="container-fluid px-md-5 d-none relative z-1">
+    
+    <!-- Dashboard Header -->
+    <header class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center border-bottom border-dark pb-4 mb-4 g-3">
+      <div>
+        <h1 class="font-outfit text-white fw-bold mb-0">
+          <i class="fa-solid fa-screwdriver-wrench text-cyan me-2"></i>RTIC 3.0 Command Center
+        </h1>
+        <p class="text-muted small mb-0">Secure portal to verify payments, approve registrations, and manage team lists.</p>
+      </div>
+      <div class="d-flex gap-2 mt-3 mt-md-0">
+        <a href="/" class="btn btn-sm btn-outline-custom py-2"><i class="fa-solid fa-house me-1"></i> Public Site</a>
+        <button type="button" class="btn btn-sm btn-danger py-2" id="logout-btn"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+      </div>
+    </header>
+
+    <!-- Metrics Cards Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow text-center">
+          <h6 class="text-muted small mb-1">Total Teams</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-total-teams">0</h2>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow-cyan text-center">
+          <h6 class="text-cyan small mb-1">Approved Participants</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-total-participants">0</h2>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow-purple text-center">
+          <h6 class="text-purple small mb-1">Total Fees Approved</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-amount-collected">₹0</h2>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow-warning text-center">
+          <h6 class="text-warning small mb-1">Pending Validation</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-pending-teams">0</h2>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow-success text-center">
+          <h6 class="text-success small mb-1">Approved Teams</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-approved-teams">0</h2>
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <div class="glass-card p-3 border-glow-danger text-center">
+          <h6 class="text-danger small mb-1">Rejected Teams</h6>
+          <h2 class="font-outfit text-white fw-bold mb-0" id="stat-rejected-teams">0</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters, Searches, and Exports Toolbar -->
+    <div class="glass-card p-3 mb-4 no-print">
+      <div class="row g-3 align-items-center">
+        <!-- Search bar -->
+        <div class="col-md-4">
+          <div class="input-group">
+            <span class="input-group-text bg-dark-input text-muted border-secondary"><i class="fa-solid fa-magnifying-glass"></i></span>
+            <input type="text" class="form-control bg-dark-input text-white border-secondary" id="search-input" placeholder="Search by ID, Name, College, Leader...">
+          </div>
+        </div>
+        
+        <!-- Status filter -->
+        <div class="col-md-3">
+          <select class="form-select bg-dark-input text-white border-secondary" id="status-filter">
+            <option value="all">Filter: All Registrations</option>
+            <option value="pending">Filter: Pending Verification</option>
+            <option value="approved">Filter: Approved Teams</option>
+            <option value="rejected">Filter: Rejected Teams</option>
+          </select>
+        </div>
+
+        <!-- Spacer -->
+        <div class="col-md-1"></div>
+
+        <!-- Export Buttons -->
+        <div class="col-md-4 text-md-end d-flex gap-2 justify-content-md-end">
+          <button type="button" class="btn btn-outline-custom w-100 w-md-auto" id="export-csv-btn">
+            <i class="fa-solid fa-file-csv me-1 text-cyan"></i> Export CSV
+          </button>
+          <button type="button" class="btn btn-outline-custom w-100 w-md-auto" id="export-excel-btn">
+            <i class="fa-solid fa-file-excel me-1 text-success"></i> Export Excel
+          </button>
+          <button type="button" class="btn btn-outline-custom w-100 w-md-auto" id="print-btn">
+            <i class="fa-solid fa-print me-1 text-purple"></i> Print
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Team Registrations List table -->
+    <div class="glass-card p-4 overflow-hidden mb-4" id="print-area">
+      <h4 class="font-outfit text-white mb-3">Team Registrations List</h4>
+      
+      <div class="table-responsive">
+        <table class="table table-dark table-hover table-striped align-middle border border-dark mb-0">
+          <thead>
+            <tr>
+              <th>Team ID</th>
+              <th>Team Name</th>
+              <th>College & Dept</th>
+              <th>Team Leader</th>
+              <th>Transaction ID</th>
+              <th>Status</th>
+              <th class="no-print">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teams-table-body">
+            <tr>
+              <td colspan="7" class="text-center py-4 text-muted">
+                <div class="spinner-border spinner-border-sm text-info me-2" role="status"></div> Loading registrations...
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- VIEW SCREENSHOT MODAL -->
+  <div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content bg-dark border border-secondary text-white">
+        <div class="modal-header border-bottom border-dark">
+          <h5 class="modal-title font-outfit" id="screenshotModalLabel">Uploaded Payment Screenshot</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center bg-dark-tint">
+          <div id="screenshot-viewer-container" class="p-2 border border-dark rounded bg-dark d-flex align-items-center justify-content-center" style="min-height: 300px;">
+            <p class="text-muted">Loading file...</p>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-dark">
+          <a href="#" target="_blank" class="btn btn-glow btn-sm" id="download-screenshot-link"><i class="fa-solid fa-download"></i> Open in New Tab</a>
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT TEAM MODAL -->
+  <div class="modal fade" id="editTeamModal" tabindex="-1" aria-labelledby="editTeamModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content bg-dark border border-secondary text-white">
+        <div class="modal-header border-bottom border-dark">
+          <h5 class="modal-title font-outfit" id="editTeamModalLabel">Edit Team Details</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="edit-team-form">
+          <input type="hidden" id="edit-team-id-ref">
+          <div class="modal-body bg-dark-tint" style="max-height: 70vh; overflow-y: auto;">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="editTeamName" class="form-label text-muted">Team Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editTeamName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editTransactionId" class="form-label text-muted">Transaction ID</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editTransactionId" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editCollege" class="form-label text-muted">College Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editCollege" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editDepartment" class="form-label text-muted">Department</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editDepartment" required>
+              </div>
+            </div>
+
+            <!-- Leader Details -->
+            <h5 class="font-outfit text-cyan mt-4 mb-2">Team Leader Details</h5>
+            <div class="row g-3 border-bottom border-dark pb-3">
+              <div class="col-md-6">
+                <label for="editLeaderName" class="form-label text-muted">Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editLeaderName" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editLeaderRegister" class="form-label text-muted">Register Number</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editLeaderRegister" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editLeaderEmail" class="form-label text-muted">Email</label>
+                <input type="email" class="form-control bg-dark-input text-white border-secondary" id="editLeaderEmail" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editLeaderPhone" class="form-label text-muted">Phone</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editLeaderPhone" required>
+              </div>
+            </div>
+
+            <!-- Member 2 Details -->
+            <h5 class="font-outfit text-cyan mt-3 mb-2">Member 2 Details</h5>
+            <div class="row g-3 border-bottom border-dark pb-3">
+              <div class="col-md-6">
+                <label for="editM2Name" class="form-label text-muted">Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM2Name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM2Register" class="form-label text-muted">Register Number</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM2Register" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM2Email" class="form-label text-muted">Email</label>
+                <input type="email" class="form-control bg-dark-input text-white border-secondary" id="editM2Email" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM2Phone" class="form-label text-muted">Phone</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM2Phone" required>
+              </div>
+            </div>
+
+            <!-- Member 3 Details -->
+            <h5 class="font-outfit text-cyan mt-3 mb-2">Member 3 Details</h5>
+            <div class="row g-3 border-bottom border-dark pb-3">
+              <div class="col-md-6">
+                <label for="editM3Name" class="form-label text-muted">Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM3Name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM3Register" class="form-label text-muted">Register Number</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM3Register" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM3Email" class="form-label text-muted">Email</label>
+                <input type="email" class="form-control bg-dark-input text-white border-secondary" id="editM3Email" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM3Phone" class="form-label text-muted">Phone</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM3Phone" required>
+              </div>
+            </div>
+
+            <!-- Member 4 Details -->
+            <h5 class="font-outfit text-cyan mt-3 mb-2">Member 4 Details</h5>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="editM4Name" class="form-label text-muted">Name</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM4Name" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM4Register" class="form-label text-muted">Register Number</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM4Register" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM4Email" class="form-label text-muted">Email</label>
+                <input type="email" class="form-control bg-dark-input text-white border-secondary" id="editM4Email" required>
+              </div>
+              <div class="col-md-6">
+                <label for="editM4Phone" class="form-label text-muted">Phone</label>
+                <input type="text" class="form-control bg-dark-input text-white border-secondary" id="editM4Phone" required>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top border-dark">
+            <button type="submit" class="btn btn-glow btn-sm"><i class="fa-solid fa-save"></i> Save Changes</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- CDNs: Bootstrap Bundle, Particles.js, SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  
+  <!-- Admin Script -->
+  <script src="/admin/admin.js"></script>
+</body>
+</html>

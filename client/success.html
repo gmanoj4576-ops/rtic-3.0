@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <title>Registration Successful | RTIC 3.0</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎉</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CDNs: Bootstrap 5, FontAwesome -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="d-flex align-items-center justify-content-center min-vh-100 py-5">
+
+  <!-- Particle Background -->
+  <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+  <div class="container relative z-2" style="max-width: 650px;">
+    
+    <div class="glass-card p-4 p-md-5 text-center shadow-lg border-glow animate-fade-in">
+      
+      <!-- Checkmark Animation -->
+      <div class="success-checkmark-wrapper mb-4">
+        <div class="checkmark-circle">
+          <i class="fa-solid fa-circle-check text-cyan fa-4x animate-pulse"></i>
+        </div>
+      </div>
+
+      <h1 class="font-outfit text-white fw-bold mb-2">Registration Completed!</h1>
+      <p class="text-muted small mb-4">Your registration request has been successfully queued for payment validation.</p>
+
+      <!-- Team ID Panel -->
+      <div class="team-id-badge p-3 bg-dark-tint border border-info rounded mb-4 d-flex align-items-center justify-content-between">
+        <div class="text-start">
+          <small class="text-muted text-uppercase tracking-wider">Your Unique Team ID</small>
+          <h2 class="font-outfit text-gradient fw-extrabold mb-0" id="display-team-id">RTIC0000</h2>
+        </div>
+        <button type="button" class="btn btn-glow font-outfit btn-sm" id="copy-team-id-btn">
+          <i class="fa-solid fa-copy me-1"></i> Copy ID
+        </button>
+      </div>
+
+      <!-- PDF Receipt Source Area (what gets captured) -->
+      <div id="receipt-capture-area" class="receipt-box text-start p-4 bg-dark-tint border border-dark rounded mb-4">
+        <div class="receipt-header d-flex justify-content-between align-items-center border-bottom border-dark pb-3 mb-3">
+          <div>
+            <h4 class="font-outfit text-white fw-bold mb-0">RTIC 3.0 Receipt</h4>
+            <small class="text-muted">Rural Tech Innovation Challenge</small>
+          </div>
+          <div class="text-end">
+            <span class="badge bg-warning text-dark text-uppercase tracking-wider px-2 py-1" style="font-size: 10px;">Verification Pending</span>
+          </div>
+        </div>
+
+        <div class="row g-3 small mb-3">
+          <div class="col-6">
+            <span class="text-muted d-block">Team ID:</span>
+            <strong class="text-white" id="r-team-id">RTIC0000</strong>
+          </div>
+          <div class="col-6 text-end">
+            <span class="text-muted d-block">Registration Date:</span>
+            <strong class="text-white" id="r-date">YYYY-MM-DD</strong>
+          </div>
+          <div class="col-6">
+            <span class="text-muted d-block">Team Name:</span>
+            <strong class="text-white" id="r-team-name">Loading...</strong>
+          </div>
+          <div class="col-6 text-end">
+            <span class="text-muted d-block">College & Department:</span>
+            <strong class="text-white" id="r-college">Loading...</strong>
+          </div>
+        </div>
+
+        <h5 class="font-outfit text-cyan mb-2 border-bottom border-dark pb-1" style="font-size: 14px;">Members Details</h5>
+        <ul class="list-unstyled small text-muted mb-3" id="r-members-list">
+          <!-- Populated by JS -->
+        </ul>
+
+        <h5 class="font-outfit text-cyan mb-2 border-bottom border-dark pb-1" style="font-size: 14px;">Payment Summary</h5>
+        <div class="row g-2 small mb-3">
+          <div class="col-6">
+            <span class="text-muted d-block">Total Fees Paid:</span>
+            <strong class="text-white">₹1400.00</strong>
+          </div>
+          <div class="col-6 text-end">
+            <span class="text-muted d-block">Transaction ID:</span>
+            <strong class="text-white font-monospace" id="r-transaction-id">Loading...</strong>
+          </div>
+        </div>
+
+        <!-- Receipt QR Code footer -->
+        <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top border-dark">
+          <div>
+            <p class="mb-0 text-muted" style="font-size: 10px;">Verify this receipt by contacting the organizers.</p>
+            <p class="mb-0 text-cyan font-outfit" style="font-size: 11px; font-weight: 500;">support@rtic.org</p>
+          </div>
+          <!-- QR Code container -->
+          <div id="receipt-qr-code" class="p-1 bg-white rounded"></div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="d-flex flex-column flex-sm-row gap-2 mt-4 justify-content-center">
+        <button type="button" class="btn btn-glow font-outfit py-2.5 px-4" id="download-receipt-btn">
+          <i class="fa-solid fa-file-pdf me-2"></i> Download Receipt (PDF)
+        </button>
+        <a href="/" class="btn btn-outline-custom font-outfit py-2.5 px-4">
+          <i class="fa-solid fa-house me-2"></i> Return Home
+        </a>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- CDNs: Particles.js, html2pdf.js, qrcode.js, Canvas Confetti -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <!-- Success JS logic -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // 1. Initialize Particles Background
+      if (typeof particlesJS !== "undefined") {
+        particlesJS("particles-js", {
+          particles: {
+            number: { value: 40, density: { enable: true, value_area: 800 } },
+            color: { value: ["#00e5ff", "#9c27b0", "#ffffff"] },
+            shape: { type: "circle" },
+            opacity: { value: 0.3, random: true },
+            size: { value: 3, random: true },
+            line_linked: { enable: true, distance: 150, color: "#00e5ff", opacity: 0.2, width: 1 },
+            move: { enable: true, speed: 2, direction: "none", random: true, straight: false, out_mode: "out" }
+          },
+          interactivity: { detect_on: "canvas", events: { resize: true } }
+        });
+      }
+
+      // 2. Fetch Registration details from sessionStorage
+      const registrationData = sessionStorage.getItem("rtic_registration");
+      if (!registrationData) {
+        // Fallback demo data if loaded directly
+        const fallback = {
+          teamId: "RTIC0001",
+          teamName: "Delta Coders",
+          college: "Tech Institute of Bangalore",
+          department: "CSE",
+          leader: { name: "Anish Roy", registerNumber: "20CSE043", email: "anish@domain.com", phone: "9876543210" },
+          member2: { name: "Rohan Das", registerNumber: "20CSE044", email: "rohan@domain.com", phone: "9876543211" },
+          member3: { name: "Sneha Sen", registerNumber: "20CSE045", email: "sneha@domain.com", phone: "9876543212" },
+          member4: { name: "Vikram Raj", registerNumber: "20CSE046", email: "vikram@domain.com", phone: "9876543213" },
+          transactionId: "TXN98765432101",
+          amount: 1400,
+          registrationDate: new Date().toISOString()
+        };
+        sessionStorage.setItem("rtic_registration", JSON.stringify(fallback));
+        window.location.reload();
+        return;
+      }
+
+      const team = JSON.parse(registrationData);
+
+      // 3. Populate text elements
+      document.getElementById("display-team-id").innerText = team.teamId;
+      document.getElementById("r-team-id").innerText = team.teamId;
+      document.getElementById("r-team-name").innerText = team.teamName;
+      document.getElementById("r-college").innerText = `${team.college} (${team.department})`;
+      document.getElementById("r-transaction-id").innerText = team.transactionId;
+      
+      const regDate = new Date(team.registrationDate);
+      document.getElementById("r-date").innerText = regDate.toLocaleDateString('en-IN', {
+        year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      // Populate members
+      const membersList = document.getElementById("r-members-list");
+      membersList.innerHTML = `
+        <li class="mb-1"><span class="text-white fw-bold">Leader:</span> ${team.leader.name} (${team.leader.registerNumber})</li>
+        <li class="mb-1"><span class="text-white fw-bold">Member 2:</span> ${team.member2.name} (${team.member2.registerNumber})</li>
+        <li class="mb-1"><span class="text-white fw-bold">Member 3:</span> ${team.member3.name} (${team.member3.registerNumber})</li>
+        <li class="mb-0"><span class="text-white fw-bold">Member 4:</span> ${team.member4.name} (${team.member4.registerNumber})</li>
+      `;
+
+      // 4. Generate QR Code embedding the Team ID
+      new QRCode(document.getElementById("receipt-qr-code"), {
+        text: `RTIC-3.0-TEAM:${team.teamId}:${team.teamName}:${team.transactionId}`,
+        width: 70,
+        height: 70,
+        colorDark: "#000000",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      // 5. Fire Canvas Confetti Celebration
+      if (typeof confetti !== "undefined") {
+        const duration = 3 * 1000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+
+        const interval = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
+
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+        }, 250);
+      }
+
+      // 6. Copy Team ID button trigger
+      document.getElementById("copy-team-id-btn").addEventListener("click", () => {
+        navigator.clipboard.writeText(team.teamId).then(() => {
+          const btn = document.getElementById("copy-team-id-btn");
+          btn.innerHTML = `<i class="fa-solid fa-check me-1"></i> Copied!`;
+          btn.classList.add("btn-success");
+          btn.classList.remove("btn-glow");
+          
+          setTimeout(() => {
+            btn.innerHTML = `<i class="fa-solid fa-copy me-1"></i> Copy ID`;
+            btn.classList.remove("btn-success");
+            btn.classList.add("btn-glow");
+          }, 2000);
+        });
+      });
+
+      // 7. Download PDF Receipt using html2pdf.js
+      document.getElementById("download-receipt-btn").addEventListener("click", () => {
+        const element = document.getElementById("receipt-capture-area");
+        
+        // Prepare options for PDF styling
+        const opt = {
+          margin:       0.5,
+          filename:     `rtic_receipt_${team.teamId}.pdf`,
+          image:        { type: 'jpeg', quality: 0.98 },
+          html2canvas:  { 
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: '#0d1117' // forces dark theme background in capture
+          },
+          jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+
+        // Run pdf generator
+        html2pdf().set(opt).from(element).save();
+      });
+
+    });
+  </script>
+</body>
+</html>

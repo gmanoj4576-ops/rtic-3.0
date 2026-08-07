@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="Registration Portal for Rural Tech Innovation Challenge 3.0. Submit your team and secure your entry.">
+  <title>Team Registration | RTIC 3.0</title>
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📝</text></svg>">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CDNs: Bootstrap 5, FontAwesome, AOS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="/assets/css/style.css">
+  
+  <!-- FOUC Prevention Script -->
+  <script>
+    {
+      const colorScheme = localStorage.getItem("color-scheme");
+      if (colorScheme) {
+        document.documentElement.setAttribute('data-theme', colorScheme);
+      }
+    }
+  </script>
+</head>
+<body class="py-5">
+
+  <!-- Particle Background -->
+  <div id="particles-js" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;"></div>
+
+  <!-- Cursor Glow Overlay -->
+  <div id="cursor-glow"></div>
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loader-content text-center">
+      <div class="spinner-grow text-info" role="status" style="width: 3rem; height: 3rem;">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <h4 class="mt-3 text-glow font-outfit">RTIC 3.0</h4>
+      <p class="text-muted small">Loading registration portal...</p>
+    </div>
+  </div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-nav">
+    <div class="container">
+      <a class="navbar-brand font-outfit fw-bold" href="/">
+        <i class="fa-solid fa-charging-station text-cyan me-2 animate-pulse"></i>RTIC <span class="text-gradient">3.0</span>
+      </a>
+      <div class="ms-auto d-flex align-items-center">
+        <a href="/" class="btn btn-outline-custom btn-sm font-outfit py-2 px-3 me-2"><i class="fa-solid fa-arrow-left me-1"></i> Back Home</a>
+        <button id="theme-toggle" class="btn btn-theme-toggle btn-sm" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Registration Form Section -->
+  <main class="container py-5 mt-5">
+    <div class="row justify-content-center">
+      <div class="col-lg-10" data-aos="fade-up">
+        
+        <div class="text-center mb-4">
+          <!-- Partner Logos -->
+          <div class="d-flex justify-content-center align-items-center gap-3 gap-md-4 mb-4 flex-wrap">
+            <div class="glass-card d-flex align-items-center justify-content-center border-glow" style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+              <img src="/assets/images/logo1.jpeg" alt="Logo 1" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <div class="glass-card d-flex align-items-center justify-content-center border-glow" style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+              <img src="/assets/images/logo2.jpeg" alt="Logo 2" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <div class="glass-card d-flex align-items-center justify-content-center border-glow" style="border-radius: 50%; width: 85px; height: 85px; padding: 4px; overflow: hidden; background: rgba(255, 255, 255, 0.05);">
+              <img src="/assets/images/logo3.jpeg" alt="Logo 3" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+          </div>
+          <h1 class="font-outfit text-white fw-bold text-glow">Team Registration Portal</h1>
+          <p class="text-muted small mx-auto" style="max-width: 500px;">Each team must have exactly 4 members. Only the team leader should perform registration. Your draft is automatically saved locally.</p>
+        </div>
+
+        <div class="registration-container glass-card p-4 p-md-5">
+          <!-- Draft Indicator Alert -->
+          <div class="alert alert-info d-none" id="draft-saved-alert" role="alert">
+            <i class="fa-solid fa-floppy-disk me-2 text-cyan"></i> Draft autosaved successfully.
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="progress-wrapper mb-4">
+            <div class="d-flex justify-content-between text-muted mb-2 font-outfit small">
+              <span class="step-lbl active">1. Team & Leader</span>
+              <span class="step-lbl">2. Members Details</span>
+              <span class="step-lbl">3. Payment & Submit</span>
+            </div>
+            <div class="progress" style="height: 6px; background-color: #161b22;">
+              <div class="progress-bar bg-gradient-cyan-purple" id="form-progress" role="progressbar" style="width: 33%;" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
+          </div>
+
+          <!-- Form Error alert -->
+          <div class="alert alert-danger d-none" id="form-error-alert" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span id="form-error-text">Please resolve the form errors.</span>
+          </div>
+
+          <!-- Multi-step form -->
+          <form id="rtic-register-form" enctype="multipart/form-data">
+            
+            <!-- STEP 1: Team & Leader Details -->
+            <div class="form-step" id="step-1">
+              <h4 class="font-outfit text-white mb-4 border-bottom border-dark pb-2"><i class="fa-solid fa-users text-cyan me-2"></i>Team & Leader Information</h4>
+              
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="teamName" class="form-label text-muted">Team Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary" id="teamName" name="teamName" required placeholder="Enter unique team name">
+                  <div class="form-text text-muted small">Must be unique. No special characters.</div>
+                </div>
+                <div class="col-md-6">
+                  <label for="college" class="form-label text-muted">College Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary" id="college" name="college" required placeholder="Enter college full name">
+                </div>
+                <div class="col-md-6">
+                  <label for="department" class="form-label text-muted">Department <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary" id="department" name="department" required placeholder="e.g. CSE, EEE, ECE">
+                </div>
+              </div>
+
+              <h5 class="font-outfit text-cyan mt-4 mb-3">Team Leader details</h5>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label for="leaderName" class="form-label text-muted">Leader Name <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary" id="leaderName" name="leaderName" required placeholder="Full Name">
+                </div>
+                <div class="col-md-6">
+                  <label for="leaderRegister" class="form-label text-muted">Leader Register Number <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary" id="leaderRegister" name="leaderRegister" required placeholder="University Reg No">
+                </div>
+                <div class="col-md-6">
+                  <label for="leaderEmail" class="form-label text-muted">Leader Email <span class="text-danger">*</span></label>
+                  <input type="email" class="form-control bg-dark-input text-white border-secondary" id="leaderEmail" name="leaderEmail" required placeholder="email@address.com">
+                </div>
+                <div class="col-md-6">
+                  <label for="leaderPhone" class="form-label text-muted">Leader Phone Number <span class="text-danger">*</span></label>
+                  <input type="tel" class="form-control bg-dark-input text-white border-secondary" id="leaderPhone" name="leaderPhone" required placeholder="10 Digit Mobile No" pattern="[0-9]{10}">
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button type="button" class="btn btn-glow px-4 py-2 font-outfit btn-next-step">
+                  Next <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 2: Members 2, 3, and 4 -->
+            <div class="form-step d-none" id="step-2">
+              <h4 class="font-outfit text-white mb-4 border-bottom border-dark pb-2"><i class="fa-solid fa-people-group text-purple me-2"></i>Team Members Information</h4>
+              
+              <!-- Member 2 -->
+              <div class="member-card mb-4 p-3 border border-dark rounded bg-dark-tint">
+                <h5 class="font-outfit text-cyan mb-3"><i class="fa-solid fa-user me-2"></i>Member 2 Details <span class="text-muted small fw-normal">(Optional)</span></h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="m2Name" class="form-label text-muted">Name</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m2Name" name="m2Name" placeholder="Full Name">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m2Register" class="form-label text-muted">Register Number</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m2Register" name="m2Register" placeholder="Reg No">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m2Email" class="form-label text-muted">Email</label>
+                    <input type="email" class="form-control bg-dark-input text-white border-secondary" id="m2Email" name="m2Email" placeholder="email@address.com">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m2Phone" class="form-label text-muted">Phone Number</label>
+                    <input type="tel" class="form-control bg-dark-input text-white border-secondary" id="m2Phone" name="m2Phone" placeholder="10 Digit Mobile No" pattern="[0-9]{10}">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 3 -->
+              <div class="member-card mb-4 p-3 border border-dark rounded bg-dark-tint">
+                <h5 class="font-outfit text-cyan mb-3"><i class="fa-solid fa-user me-2"></i>Member 3 Details <span class="text-muted small fw-normal">(Optional)</span></h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="m3Name" class="form-label text-muted">Name</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m3Name" name="m3Name" placeholder="Full Name">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m3Register" class="form-label text-muted">Register Number</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m3Register" name="m3Register" placeholder="Reg No">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m3Email" class="form-label text-muted">Email</label>
+                    <input type="email" class="form-control bg-dark-input text-white border-secondary" id="m3Email" name="m3Email" placeholder="email@address.com">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m3Phone" class="form-label text-muted">Phone Number</label>
+                    <input type="tel" class="form-control bg-dark-input text-white border-secondary" id="m3Phone" name="m3Phone" placeholder="10 Digit Mobile No" pattern="[0-9]{10}">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Member 4 -->
+              <div class="member-card mb-4 p-3 border border-dark rounded bg-dark-tint">
+                <h5 class="font-outfit text-cyan mb-3"><i class="fa-solid fa-user me-2"></i>Member 4 Details <span class="text-muted small fw-normal">(Optional)</span></h5>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label for="m4Name" class="form-label text-muted">Name</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m4Name" name="m4Name" placeholder="Full Name">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m4Register" class="form-label text-muted">Register Number</label>
+                    <input type="text" class="form-control bg-dark-input text-white border-secondary" id="m4Register" name="m4Register" placeholder="Reg No">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m4Email" class="form-label text-muted">Email</label>
+                    <input type="email" class="form-control bg-dark-input text-white border-secondary" id="m4Email" name="m4Email" placeholder="email@address.com">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="m4Phone" class="form-label text-muted">Phone Number</label>
+                    <input type="tel" class="form-control bg-dark-input text-white border-secondary" id="m4Phone" name="m4Phone" placeholder="10 Digit Mobile No" pattern="[0-9]{10}">
+                  </div>
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-custom px-4 py-2 font-outfit btn-prev-step">
+                  <i class="fa-solid fa-arrow-left me-2"></i> Back
+                </button>
+                <button type="button" class="btn btn-glow px-4 py-2 font-outfit btn-next-step">
+                  Next <i class="fa-solid fa-arrow-right ms-2"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- STEP 3: Payment Section -->
+            <div class="form-step d-none" id="step-3">
+              <h4 class="font-outfit text-white mb-4 border-bottom border-dark pb-2"><i class="fa-solid fa-credit-card text-cyan me-2"></i>Registration Fee & Payment</h4>
+              
+              <!-- Payment Tabs Navigation -->
+              <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                  <div class="fee-card glass-card p-4 mb-3 border border-info">
+                    <h5 class="font-outfit text-white mb-3">Registration Fee Summary</h5>
+                    <div class="d-flex justify-content-between text-muted border-bottom border-dark pb-2 mb-2">
+                      <span>Team Members</span>
+                      <span class="text-white fw-bold">4 Members</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted border-bottom border-dark pb-2 mb-2">
+                      <span>Fee Per Member</span>
+                      <span class="text-white fw-bold">₹350</span>
+                    </div>
+                    <div class="d-flex justify-content-between text-muted pt-2 fs-5">
+                      <span class="text-cyan fw-bold">Total Amount</span>
+                      <span class="text-gradient fw-extrabold">₹1400</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-6">
+                  <div class="glass-card p-3 border-glow">
+                    <!-- Nav Tabs -->
+                    <ul class="nav nav-pills nav-fill mb-3" id="paymentTabs" role="tablist" style="background: rgba(0,0,0,0.25); border-radius: 10px; padding: 4px;">
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link active py-2 text-glow font-outfit btn-sm" id="upi-tab" data-bs-toggle="pill" data-bs-target="#pills-upi" type="button" role="tab" aria-controls="pills-upi" aria-selected="true" style="border-radius: 8px;">
+                          <i class="fa-solid fa-qrcode me-2"></i> UPI QR Code
+                        </button>
+                      </li>
+                      <li class="nav-item" role="presentation">
+                        <button class="nav-link py-2 font-outfit btn-sm" id="bank-tab" data-bs-toggle="pill" data-bs-target="#pills-bank" type="button" role="tab" aria-controls="pills-bank" aria-selected="false" style="border-radius: 8px;">
+                          <i class="fa-solid fa-building-columns me-2"></i> Bank Details
+                        </button>
+                      </li>
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="paymentTabsContent">
+                      <!-- UPI Tab -->
+                      <div class="tab-pane fade show active text-center" id="pills-upi" role="tabpanel" aria-labelledby="upi-tab">
+                        <div class="qr-container d-inline-block border border-dark rounded p-2 mb-3 bg-dark-tint" style="background: #ffffff; border-radius: 12px !important; padding: 8px !important;">
+                          <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=upi://pay?pa=ruraltech@upi%26pn=RTIC3.0%26am=1400%26cu=INR" alt="UPI QR Code" id="payment-qr-image" class="img-fluid rounded" style="width: 130px; height: 130px;">
+                        </div>
+                        <div class="p-2 bg-dark-input border border-dark rounded d-flex justify-content-between align-items-center text-start">
+                          <div>
+                            <small class="text-muted d-block" style="font-size: 11px;">UPI ID</small>
+                            <span class="font-outfit text-cyan fw-bold" id="upi-id-text" style="font-size: 14px;">ruraltech@upi</span>
+                          </div>
+                          <button type="button" class="btn btn-sm btn-outline-custom px-3" id="copy-upi-btn">
+                            <i class="fa-solid fa-copy"></i> Copy
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Bank Tab -->
+                      <div class="tab-pane fade" id="pills-bank" role="tabpanel" aria-labelledby="bank-tab">
+                        <div class="bank-details-list small text-start p-2">
+                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
+                            <span class="text-muted">Account Name:</span>
+                            <strong class="text-white">IEEE STUDENT BRANCH</strong>
+                          </div>
+                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
+                            <span class="text-muted">Account No:</span>
+                            <strong class="text-white font-monospace text-glow">335602011000121</strong>
+                          </div>
+                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
+                            <span class="text-muted">Bank Name:</span>
+                            <strong class="text-white">UNION BANK OF INDIA</strong>
+                          </div>
+                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
+                            <span class="text-muted">Branch Name:</span>
+                            <strong class="text-white">KRISHNANKOIL, WATRAP</strong>
+                          </div>
+                          <div class="d-flex justify-content-between border-bottom border-dark py-1.5" style="border-color: rgba(255,255,255,0.06) !important;">
+                            <span class="text-muted">IFSC Code:</span>
+                            <strong class="text-white font-monospace text-glow">UBIN0562734</strong>
+                          </div>
+                          <div class="d-flex justify-content-between py-1.5">
+                            <span class="text-muted">MICR Code:</span>
+                            <strong class="text-white font-monospace">626026503</strong>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+
+              <div class="row g-3 mt-3">
+                <div class="col-md-6">
+                  <label for="transactionId" class="form-label text-muted">Transaction ID / UTR Number <span class="text-danger">*</span></label>
+                  <input type="text" class="form-control bg-dark-input text-white border-secondary font-monospace" id="transactionId" name="transactionId" required placeholder="12-digit transaction number">
+                </div>
+                <div class="col-md-6">
+                  <label for="paymentScreenshot" class="form-label text-muted">Upload Payment Screenshot <span class="text-danger">*</span></label>
+                  <input type="file" class="form-control bg-dark-input text-white border-secondary" id="paymentScreenshot" name="paymentScreenshot" accept=".jpg,.jpeg,.png,.pdf" required>
+                  <div class="form-text text-muted small">Accepted: JPG, JPEG, PNG, PDF. Max: 10MB.</div>
+                </div>
+              </div>
+
+              <!-- Terms & Conditions checkbox -->
+              <div class="form-check mt-4 mb-2 text-start">
+                <input class="form-check-input" type="checkbox" value="" id="agreeTerms" required>
+                <label class="form-check-label text-muted small" for="agreeTerms">
+                  I agree that all registration details are correct, and I understand that submission of invalid/duplicate payment credentials will cause immediate disqualification without refund.
+                </label>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-outline-custom px-4 py-2 font-outfit btn-prev-step">
+                  <i class="fa-solid fa-arrow-left me-2"></i> Back
+                </button>
+                <button type="submit" class="btn btn-glow px-5 py-2 font-outfit" id="submit-btn">
+                  Submit Registration <i class="fa-solid fa-paper-plane ms-2"></i>
+                </button>
+              </div>
+            </div>
+
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="py-4 mt-5 border-top border-dark bg-dark-tint text-center text-muted small">
+    <div class="container">
+      <p class="mb-0">© 2026 Rural Tech Innovation Challenge 3.0. All Rights Reserved. IEEE Student Branch.</p>
+    </div>
+  </footer>
+
+  <!-- CDNs: Bootstrap Bundle, Particles.js, AOS, GSAP, SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Custom scripts -->
+  <script src="/assets/js/main.js?v=3.1"></script>
+</body>
+</html>
