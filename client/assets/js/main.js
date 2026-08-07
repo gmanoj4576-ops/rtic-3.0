@@ -555,4 +555,30 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
+  // Query & Feedback form listener
+  const queryForm = document.getElementById("query-form");
+  if (queryForm) {
+    queryForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("query-name").value.trim();
+      const email = document.getElementById("query-email").value.trim();
+      const message = document.getElementById("query-message").value.trim();
+      
+      const mailtoUrl = `mailto:ieeeraskare@gmail.com?subject=RTIC 3.0 Query from ${encodeURIComponent(name)}&body=Name: ${encodeURIComponent(name)}%0AEmail: ${encodeURIComponent(email)}%0A%0AQuery:%0A${encodeURIComponent(message)}`;
+      window.location.href = mailtoUrl;
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Feedback Pre-filled!',
+        text: 'Opening your email client to send the message. Thank you!',
+        timer: 3000,
+        showConfirmButton: false,
+        background: getTheme() === 'dark' ? '#080c14' : '#ffffff',
+        color: getTheme() === 'dark' ? '#94a3b8' : '#334155'
+      });
+      
+      queryForm.reset();
+    });
+  }
+
 });
