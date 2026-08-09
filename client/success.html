@@ -91,7 +91,7 @@
         <div class="row g-2 small mb-3">
           <div class="col-6">
             <span class="text-muted d-block">Total Fees Paid:</span>
-            <strong class="text-white">₹1400.00</strong>
+            <strong class="text-white" id="r-amount">₹1400.00</strong>
           </div>
           <div class="col-6 text-end">
             <span class="text-muted d-block">Transaction ID:</span>
@@ -180,20 +180,28 @@
       document.getElementById("r-team-name").innerText = team.teamName;
       document.getElementById("r-college").innerText = `${team.college} (${team.department})`;
       document.getElementById("r-transaction-id").innerText = team.transactionId;
+      document.getElementById("r-amount").innerText = `₹${team.amount || 1400}.00`;
       
       const regDate = new Date(team.registrationDate);
       document.getElementById("r-date").innerText = regDate.toLocaleDateString('en-IN', {
         year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit'
       });
 
-      // Populate members
+      // Populate members dynamically based on non-empty names
       const membersList = document.getElementById("r-members-list");
-      membersList.innerHTML = `
+      let membersHTML = `
         <li class="mb-1"><span class="text-white fw-bold">Leader:</span> ${team.leader.name} (${team.leader.registerNumber})</li>
-        <li class="mb-1"><span class="text-white fw-bold">Member 2:</span> ${team.member2.name} (${team.member2.registerNumber})</li>
-        <li class="mb-1"><span class="text-white fw-bold">Member 3:</span> ${team.member3.name} (${team.member3.registerNumber})</li>
-        <li class="mb-0"><span class="text-white fw-bold">Member 4:</span> ${team.member4.name} (${team.member4.registerNumber})</li>
       `;
+      if (team.member2 && team.member2.name && team.member2.name.trim()) {
+        membersHTML += `<li class="mb-1"><span class="text-white fw-bold">Member 2:</span> ${team.member2.name} (${team.member2.registerNumber})</li>`;
+      }
+      if (team.member3 && team.member3.name && team.member3.name.trim()) {
+        membersHTML += `<li class="mb-1"><span class="text-white fw-bold">Member 3:</span> ${team.member3.name} (${team.member3.registerNumber})</li>`;
+      }
+      if (team.member4 && team.member4.name && team.member4.name.trim()) {
+        membersHTML += `<li class="mb-0"><span class="text-white fw-bold">Member 4:</span> ${team.member4.name} (${team.member4.registerNumber})</li>`;
+      }
+      membersList.innerHTML = membersHTML;
 
       // 4. Generate QR Code embedding the Team ID
       new QRCode(document.getElementById("receipt-qr-code"), {
@@ -256,7 +264,9 @@
           html2canvas:  { 
             scale: 2, 
             useCORS: true,
-            backgroundColor: '#0d1117' // forces dark theme background in capture
+            backgroundColor: '#0d1117', // forces dark theme background in capture
+            scrollY: 0,
+            scrollX: 0
           },
           jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
