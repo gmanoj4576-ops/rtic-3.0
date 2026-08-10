@@ -541,7 +541,9 @@ document.addEventListener("DOMContentLoaded", () => {
       formData.append("member4", JSON.stringify(member4));
 
       try {
-        const API_BASE = window.location.port === "8000" ? "http://localhost:5000" : "";
+        const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:")
+          ? (window.location.port === "5000" ? "" : "http://localhost:5000")
+          : "";
         const response = await fetch(`${API_BASE}/api/teams/register`, {
           method: "POST",
           body: formData

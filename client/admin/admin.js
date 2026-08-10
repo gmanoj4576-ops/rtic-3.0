@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-  const API_BASE = window.location.port === "8000" ? "http://localhost:5000" : "";
+  const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.protocol === "file:")
+    ? (window.location.port === "5000" ? "" : "http://localhost:5000")
+    : "";
 
   // Variables
   const loginOverlay = document.getElementById("admin-login-overlay");
@@ -257,17 +259,19 @@ document.addEventListener("DOMContentLoaded", () => {
         const container = document.getElementById("screenshot-viewer-container");
         const downloadLink = document.getElementById("download-screenshot-link");
         
-        downloadLink.href = filePath;
+        // Ensure path is absolute URL if it doesn't start with http/https
+        const fullFilePath = filePath.startsWith("http") ? filePath : `${API_BASE}${filePath}`;
+        downloadLink.href = fullFilePath;
 
         // Reset viewer container
         container.innerHTML = "";
         
         if (filePath.toLowerCase().endsWith(".pdf")) {
           // Embed PDF inside iframe
-          container.innerHTML = `<iframe src="${filePath}" style="width: 100%; height: 500px;" frameborder="0"></iframe>`;
+          container.innerHTML = `<iframe src="${fullFilePath}" style="width: 100%; height: 500px;" frameborder="0"></iframe>`;
         } else {
           // Render image
-          container.innerHTML = `<img src="${filePath}" alt="Screenshot" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;">`;
+          container.innerHTML = `<img src="${fullFilePath}" alt="Screenshot" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;">`;
         }
 
         const modal = new bootstrap.Modal(document.getElementById("screenshotModal"));
@@ -509,15 +513,75 @@ document.addEventListener("DOMContentLoaded", () => {
     downloadFile(csvContent, "rtic_registrations.csv", "text/csv;charset=utf-8;");
   });
 
-  // Export Excel (Generates tab-separated CSV format readable by Excel directly)
+  // Export Excel using SheetJS for a proper Excel file download
   exportExcelBtn.addEventListener("click", () => {
     if (allTeamsData.length === 0) {
       Swal.fire({ icon: 'info', title: 'No Data', text: 'There are no registrations to export.' });
       return;
     }
-    // Excel reads UTF-8 CSV easily with a BOM prepended
-    const csvContent = "\uFEFF" + convertToCSV(allTeamsData);
-    downloadFile(csvContent, "rtic_registrations.xlsx", "text/csv;charset=utf-8;");
+
+    const headers = [
+      "Team ID", "Team Name", "College", "Department",
+      "Leader Name", "Leader Reg No", "Leader Email", "Leader Phone",
+      "Member 2 Name", "Member 2 Reg No", "Member 2 Email", "Member 2 Phone",
+      "Member 3 Name", "Member 3 Reg No", "Member 3 Email", "Member 3 Phone",
+      "Member 4 Name", "Member 4 Reg No", "Member 4 Email", "Member 4 Phone",
+      "Transaction ID", "Amount", "Status", "Registration Date"
+    ];
+
+    const data = [headers];
+
+    allTeamsData.forEach(item => {
+      data.push([
+        item.teamId || "",
+        item.teamName || "",
+        item.college || "",
+        item.department || "",
+        (item.leader && item.leader.name) || "",
+        (item.leader && item.leader.registerNumber) || "",
+        (item.leader && item.leader.email) || "",
+        (item.leader && item.leader.phone) || "",
+        (item.member2 && item.member2.name) || "",
+        (item.member2 && item.member2.registerNumber) || "",
+        (item.member2 && item.member2.email) || "",
+        (item.member2 && item.member2.phone) || "",
+        (item.member3 && item.member3.name) || "",
+        (item.member3 && item.member3.registerNumber) || "",
+        (item.member3 && item.member3.email) || "",
+        (item.member3 && item.member3.phone) || "",
+        (item.member4 && item.member4.name) || "",
+        (item.member4 && item.member4.registerNumber) || "",
+        (item.member4 && item.member4.email) || "",
+        (item.member4 && item.member4.phone) || "",
+        item.transactionId || "",
+        item.amount || "",
+        item.status || "",
+        item.registrationDate ? new Date(item.registrationDate).toISOString() : ""
+      ]);
+    });
+
+    try {
+      if (typeof XLSX === "undefined") {
+        throw new Error("SheetJS (XLSX) library is not loaded.");
+      }
+      const worksheet = XLSX.utils.aoa_to_sheet(data);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Registrations");
+
+      // Auto-fit column widths
+      const max_width = headers.map((val, colIdx) =>
+        Math.max(...data.map(row => row[colIdx] ? row[colIdx].toString().length : 0))
+      );
+      worksheet["!cols"] = max_width.map(w => ({ w: Math.min(Math.max(w + 2, 10), 50) }));
+
+      // Write and trigger download
+      XLSX.writeFile(workbook, "rtic_registrations.xlsx");
+    } catch (err) {
+      console.error("Excel generation failed, falling back to legacy CSV download method:", err);
+      // Fallback to legacy tab-separated CSV/BOM format
+      const csvContent = "\uFEFF" + convertToCSV(allTeamsData);
+      downloadFile(csvContent, "rtic_registrations.xlsx", "text/csv;charset=utf-8;");
+    }
   });
 
   // Print Page
@@ -539,30 +603,30 @@ document.addEventListener("DOMContentLoaded", () => {
 
     objArray.forEach(item => {
       const row = [
-        item.teamId,
-        `"${item.teamName.replace(/"/g, '""')}"`,
-        `"${item.college.replace(/"/g, '""')}"`,
-        item.department,
-        `"${item.leader.name.replace(/"/g, '""')}"`,
-        item.leader.registerNumber,
-        item.leader.email,
-        item.leader.phone,
-        `"${item.member2.name.replace(/"/g, '""')}"`,
-        item.member2.registerNumber,
-        item.member2.email,
-        item.member2.phone,
-        `"${item.member3.name.replace(/"/g, '""')}"`,
-        item.member3.registerNumber,
-        item.member3.email,
-        item.member3.phone,
-        `"${item.member4.name.replace(/"/g, '""')}"`,
-        item.member4.registerNumber,
-        item.member4.email,
-        item.member4.phone,
-        item.transactionId,
-        item.amount,
-        item.status,
-        new Date(item.registrationDate).toISOString()
+        item.teamId || "",
+        `"${(item.teamName || "").replace(/"/g, '""')}"`,
+        `"${(item.college || "").replace(/"/g, '""')}"`,
+        item.department || "",
+        `"${((item.leader && item.leader.name) || "").replace(/"/g, '""')}"`,
+        (item.leader && item.leader.registerNumber) || "",
+        (item.leader && item.leader.email) || "",
+        (item.leader && item.leader.phone) || "",
+        `"${((item.member2 && item.member2.name) || "").replace(/"/g, '""')}"`,
+        (item.member2 && item.member2.registerNumber) || "",
+        (item.member2 && item.member2.email) || "",
+        (item.member2 && item.member2.phone) || "",
+        `"${((item.member3 && item.member3.name) || "").replace(/"/g, '""')}"`,
+        (item.member3 && item.member3.registerNumber) || "",
+        (item.member3 && item.member3.email) || "",
+        (item.member3 && item.member3.phone) || "",
+        `"${((item.member4 && item.member4.name) || "").replace(/"/g, '""')}"`,
+        (item.member4 && item.member4.registerNumber) || "",
+        (item.member4 && item.member4.email) || "",
+        (item.member4 && item.member4.phone) || "",
+        item.transactionId || "",
+        item.amount || "",
+        item.status || "",
+        item.registrationDate ? new Date(item.registrationDate).toISOString() : ""
       ];
       str += row.join(",") + "\r\n";
     });
