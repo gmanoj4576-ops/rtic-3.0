@@ -255,23 +255,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // View Screenshot Modal trigger
     document.querySelectorAll(".btn-view-proof").forEach(btn => {
       btn.addEventListener("click", () => {
-        const filePath = btn.getAttribute("data-file");
+        const filePath = btn.getAttribute("data-file") || "";
         const container = document.getElementById("screenshot-viewer-container");
         const downloadLink = document.getElementById("download-screenshot-link");
         
-        // Ensure path is absolute URL if it doesn't start with http/https
-        const fullFilePath = filePath.startsWith("http") ? filePath : `${API_BASE}${filePath}`;
+        // Clean path and handle backslashes from database entries
+        let cleanPath = filePath.replace(/\\/g, '/');
+        if (!cleanPath.startsWith("http") && !cleanPath.startsWith("/")) {
+          cleanPath = "/" + cleanPath;
+        }
+        
+        const fullFilePath = cleanPath.startsWith("http") ? cleanPath : `${API_BASE}${cleanPath}`;
         downloadLink.href = fullFilePath;
 
         // Reset viewer container
         container.innerHTML = "";
         
-        if (filePath.toLowerCase().endsWith(".pdf")) {
+        if (cleanPath.toLowerCase().endsWith(".pdf")) {
           // Embed PDF inside iframe
           container.innerHTML = `<iframe src="${fullFilePath}" style="width: 100%; height: 500px;" frameborder="0"></iframe>`;
         } else {
-          // Render image
-          container.innerHTML = `<img src="${fullFilePath}" alt="Screenshot" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;">`;
+          // Render image with onerror fallback placeholder
+          container.innerHTML = `<img src="${fullFilePath}" alt="Screenshot" class="img-fluid rounded" style="max-height: 500px; object-fit: contain;" onerror="this.onerror=null; this.src='https://placehold.co/600x400?text=Payment+Screenshot+Not+Found';">`;
         }
 
         const modal = new bootstrap.Modal(document.getElementById("screenshotModal"));
@@ -568,11 +573,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Registrations");
 
-      // Auto-fit column widths
+      // Auto-fit column widths using SheetJS wch property
       const max_width = headers.map((val, colIdx) =>
         Math.max(...data.map(row => row[colIdx] ? row[colIdx].toString().length : 0))
       );
-      worksheet["!cols"] = max_width.map(w => ({ w: Math.min(Math.max(w + 2, 10), 50) }));
+      worksheet["!cols"] = max_width.map(w => ({ wch: Math.min(Math.max(w + 2, 10), 50) }));
 
       // Write and trigger download
       XLSX.writeFile(workbook, "rtic_registrations.xlsx");
