@@ -296,6 +296,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (badgeAllCount) badgeAllCount.textContent = allTeams.length;
     if (badgePendingCount) badgePendingCount.textContent = pendingCount;
     if (badgeCompleteCount) badgeCompleteCount.textContent = completeCount;
+
+    const mobAll = document.getElementById('mob-badge-all');
+    const mobPending = document.getElementById('mob-badge-pending');
+    const mobComplete = document.getElementById('mob-badge-complete');
+    if (mobAll) mobAll.textContent = allTeams.length;
+    if (mobPending) mobPending.textContent = pendingCount;
+    if (mobComplete) mobComplete.textContent = completeCount;
   }
 
   // --- HOME VIEW SEARCH & CARDS ---
@@ -308,8 +315,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const query = (homeSearchInput ? homeSearchInput.value : '').toLowerCase().trim();
     const activeDayKey = getActiveDayKey();
 
+    // If search query is empty, DO NOT show team names on home page!
+    if (!query) {
+      if (homeResultsTitle) homeResultsTitle.textContent = '';
+      homeTeamsList.innerHTML = `
+        <div class="text-center py-5 px-3 card glass-card border-dashed border-secondary">
+          <div class="mb-3">
+            <i class="fa-solid fa-qrcode fa-3x text-cyan animate-pulse"></i>
+          </div>
+          <h4 class="font-outfit text-white fw-bold mb-2">Ready to Evaluate</h4>
+          <p class="text-muted small mb-0" style="max-width: 440px; margin: 0 auto;">
+            Use the <strong>Camera QR Scanner</strong> above or type a <strong>Team ID</strong> (e.g. <code>RTIC0001</code>) / <strong>Leader Name</strong> / <strong>Reg No</strong> in the search box to load team details for evaluation.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
     let filtered = allTeams.filter(team => {
-      if (!query) return true;
       return (
         team.teamId.toLowerCase().includes(query) ||
         team.teamName.toLowerCase().includes(query) ||
@@ -321,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (homeResultsTitle) {
-      homeResultsTitle.textContent = query ? `Search Results (${filtered.length})` : `All Teams (${filtered.length})`;
+      homeResultsTitle.textContent = `Search Results (${filtered.length})`;
     }
 
     if (filtered.length === 0) {
@@ -476,6 +499,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (matched) {
       stopQrScanner();
+      if (homeSearchInput) {
+        homeSearchInput.value = matched.teamId;
+        renderHomeTeams();
+      }
       showToast(`QR Scanned: Matched Team ${matched.teamId} (${matched.teamName})!`, 'success');
       openEvaluationModal(matched._id);
     } else {

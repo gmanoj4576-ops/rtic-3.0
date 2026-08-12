@@ -610,14 +610,15 @@
 
   <!-- Mobile Top Header Bar -->
   <header class="mobile-header align-items-center justify-content-between">
-    <button id="sidebar-toggle" class="btn btn-outline-secondary border-0 text-white fs-4 p-1" aria-label="Toggle Sidebar Menu">
-      <i class="fa-solid fa-bars"></i>
+    <button id="sidebar-toggle" class="btn btn-gradient-eval px-3 py-1.5 font-outfit d-flex align-items-center gap-1.5" aria-label="Toggle Sidebar Menu">
+      <i class="fa-solid fa-bars fs-6"></i>
+      <span class="fw-bold" style="font-size: 13px;">MENU</span>
     </button>
-    <div class="font-outfit fw-bold text-white fs-5">
-      <i class="fa-solid fa-scale-balanced text-cyan me-1.5"></i>RTIC <span class="text-gradient">EVAL</span>
+    <div class="font-outfit fw-bold text-white fs-6">
+      <i class="fa-solid fa-scale-balanced text-cyan me-1"></i>RTIC <span class="text-gradient">EVAL</span>
     </div>
-    <button id="mobile-home-qr-btn" class="btn btn-sm btn-gradient-eval px-2.5 py-1 font-outfit">
-      <i class="fa-solid fa-qrcode me-1"></i> Scan QR
+    <button id="mobile-home-qr-btn" class="btn btn-sm btn-outline-cyan px-2.5 py-1 font-outfit">
+      <i class="fa-solid fa-qrcode me-1"></i> Camera
     </button>
   </header>
 
@@ -729,6 +730,27 @@
 
     <!-- MAIN CONTENT VIEWS -->
     <main class="main-content">
+
+      <!-- Top Mobile Navigation Quick-Menu Bar -->
+      <div class="mobile-menu-bar d-lg-none mb-3">
+        <div class="d-flex overflow-auto gap-2 pb-1" style="white-space: nowrap; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
+          <button class="btn btn-sm btn-gradient-eval font-outfit px-3 py-2 rounded-3 nav-item-link active border-0" data-view="home">
+            <i class="fa-solid fa-qrcode me-1.5"></i> Scan / Search
+          </button>
+          <button class="btn btn-sm btn-outline-warning font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="pending">
+            <i class="fa-solid fa-clock text-warning me-1.5"></i> Pending (<span id="mob-badge-pending">0</span>)
+          </button>
+          <button class="btn btn-sm btn-outline-success font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="complete">
+            <i class="fa-solid fa-circle-check text-success me-1.5"></i> Graded (<span id="mob-badge-complete">0</span>)
+          </button>
+          <button class="btn btn-sm btn-outline-info font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="all">
+            <i class="fa-solid fa-users text-info me-1.5"></i> All Teams (<span id="mob-badge-all">0</span>)
+          </button>
+          <button class="btn btn-sm btn-outline-light font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="leaderboard">
+            <i class="fa-solid fa-trophy text-amber me-1.5" style="color: #ffb703;"></i> Leaderboard
+          </button>
+        </div>
+      </div>
 
       <!-- VIEW 1: HOME & CAMERA QR CODE SCANNER -->
       <section id="view-home" class="content-view">
