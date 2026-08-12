@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Secure Evaluation Portal for RTIC 3.0.">
   <meta name="author" content="RTIC Team">
@@ -20,9 +20,10 @@
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- CDNs: Bootstrap 5, FontAwesome -->
+  <!-- CDNs: Bootstrap 5, FontAwesome, Html5Qrcode -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/assets/css/style.css">
@@ -40,22 +41,149 @@
 
     body {
       background-color: #070103;
+      color: #ffffff;
+      min-height: 100vh;
     }
 
     body::before {
       opacity: 0.75;
-      background: linear-gradient(to bottom, rgba(7, 1, 3, 0.75) 0%, rgba(7, 1, 3, 0.95) 100%), url('/assets/images/robot_bg.png') no-repeat center top;
+      background: linear-gradient(to bottom, rgba(7, 1, 3, 0.85) 0%, rgba(7, 1, 3, 0.95) 100%), url('/assets/images/robot_bg.png') no-repeat center top;
       background-size: cover;
     }
 
-    .evaluation-container {
-      margin-top: 90px;
-      min-height: 80vh;
+    /* Left Sidebar Navigation Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
     }
 
+    .sidebar {
+      width: 280px;
+      background: rgba(12, 2, 5, 0.96);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid rgba(255, 0, 85, 0.2);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1040;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .sidebar-brand {
+      padding: 24px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .sidebar-user-badge {
+      padding: 12px 16px;
+      margin: 14px 16px 4px 16px;
+      background: rgba(255, 0, 85, 0.06);
+      border: 1px solid rgba(255, 0, 85, 0.2);
+      border-radius: 12px;
+    }
+
+    .sidebar-menu {
+      padding: 14px 16px;
+      flex: 1 1 auto;
+      overflow-y: auto;
+    }
+
+    .sidebar-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #8b949e;
+      margin: 12px 0 6px 12px;
+      font-family: var(--font-title);
+      font-weight: 700;
+    }
+
+    .nav-item-link {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      color: #a3b3c2;
+      border-radius: 12px;
+      font-family: var(--font-title);
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      margin-bottom: 6px;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .nav-item-link i {
+      font-size: 16px;
+      width: 22px;
+      text-align: center;
+    }
+
+    .nav-item-link:hover {
+      background: rgba(255, 0, 85, 0.08);
+      color: var(--cyan);
+      border-color: rgba(255, 0, 85, 0.2);
+    }
+
+    .nav-item-link.active {
+      background: linear-gradient(135deg, rgba(255, 0, 85, 0.25) 0%, rgba(0, 212, 255, 0.2) 100%);
+      color: #ffffff;
+      border-color: rgba(255, 0, 85, 0.4);
+      box-shadow: 0 4px 15px rgba(255, 0, 85, 0.25);
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .main-content {
+      flex: 1 1 auto;
+      margin-left: 280px;
+      padding: 32px;
+      min-height: 100vh;
+      transition: margin-left 0.3s ease;
+    }
+
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: rgba(10, 2, 5, 0.95);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 0, 85, 0.2);
+      z-index: 1030;
+      padding: 0 16px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1035;
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    /* Cards & UI Controls */
     .login-card {
       max-width: 460px;
-      margin: 40px auto;
+      margin: 60px auto;
       border: 1px solid rgba(255, 0, 85, 0.25);
       box-shadow: 0 15px 40px rgba(255, 0, 85, 0.2), 0 0 20px rgba(0, 0, 0, 0.8);
       background: rgba(18, 4, 8, 0.85);
@@ -109,44 +237,30 @@
       color: #fff;
     }
 
-    .nav-tabs-custom {
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 25px;
+    /* QR Code Scanner Box */
+    .qr-scanner-card {
+      background: rgba(18, 4, 8, 0.85);
+      backdrop-filter: blur(14px);
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .nav-tabs-custom .nav-link {
-      color: var(--text-main);
-      border: none;
-      font-family: var(--font-title);
-      font-weight: 600;
-      padding: 12px 20px;
-      position: relative;
-      background: transparent;
-      opacity: 0.65;
-      transition: all 0.3s ease;
-      font-size: 15px;
-    }
-
-    .nav-tabs-custom .nav-link:hover {
-      opacity: 1;
-      color: var(--cyan);
-    }
-
-    .nav-tabs-custom .nav-link.active {
-      background: transparent;
-      color: var(--cyan);
-      opacity: 1;
-    }
-
-    .nav-tabs-custom .nav-link.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
+    #qr-reader {
       width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, var(--cyan), var(--purple));
-      border-radius: 3px 3px 0 0;
+      max-width: 480px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 2px dashed rgba(0, 212, 255, 0.4);
+      background: #050103;
+    }
+
+    #qr-reader video {
+      width: 100% !important;
+      border-radius: 14px;
+      object-fit: cover;
     }
 
     .custom-table {
@@ -182,7 +296,7 @@
       background-color: rgba(255, 255, 255, 0.03) !important;
     }
 
-    /* Native Dialog Display Override Fix */
+    /* Native Dialog Override Fix */
     dialog:not([open]) {
       display: none !important;
     }
@@ -264,8 +378,6 @@
       width: 65px;
       border-radius: 8px;
       padding: 6px 4px;
-
-      /* Hide HTML5 spinner arrows for cleaner look */
       -moz-appearance: textfield;
     }
 
@@ -364,7 +476,6 @@
       border-color: transparent;
     }
 
-    /* Mobile Card Styles */
     .mobile-team-card, .mobile-leaderboard-card {
       background: rgba(18, 4, 8, 0.88);
       backdrop-filter: blur(12px);
@@ -375,16 +486,25 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
     }
 
-    /* Mobile Response Sheet specific styles (@media max-width: 767px) */
-    @media (max-width: 767px) {
-      .evaluation-container {
-        margin-top: 75px;
-        padding-left: 10px;
-        padding-right: 10px;
+    /* Media Queries for Mobile Responsiveness */
+    @media (max-width: 991px) {
+      .sidebar {
+        transform: translateX(-100%);
       }
 
-      .navbar-brand {
-        font-size: 1rem;
+      .sidebar.show {
+        transform: translateX(0);
+        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.9);
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 16px 12px;
+        margin-top: 64px;
+      }
+
+      .mobile-header {
+        display: flex;
       }
 
       .sheet-drag-handle {
@@ -396,7 +516,6 @@
         margin: 0 auto 12px auto;
       }
 
-      /* Transform evaluation dialog into a Mobile Bottom Response Sheet */
       dialog[open] {
         position: fixed !important;
         top: auto !important;
@@ -474,7 +593,6 @@
       }
     }
   </style>
-  </style>
 </head>
 
 <body>
@@ -490,212 +608,311 @@
     </div>
   </div>
 
-  <!-- Navigation Bar -->
-  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-nav">
-    <div class="container">
-      <a class="navbar-brand font-outfit fw-bold" href="#">
-        <i class="fa-solid fa-scale-balanced text-cyan me-2"></i>RTIC <span class="text-gradient">EVALUATION</span>
-      </a>
-      <div class="ms-auto d-flex align-items-center">
-        <button id="theme-toggle" class="btn btn-theme-toggle me-3" aria-label="Toggle Theme">
-          <i class="fa-solid fa-moon"></i>
+  <!-- Mobile Top Header Bar -->
+  <header class="mobile-header align-items-center justify-content-between">
+    <button id="sidebar-toggle" class="btn btn-outline-secondary border-0 text-white fs-4 p-1" aria-label="Toggle Sidebar Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <div class="font-outfit fw-bold text-white fs-5">
+      <i class="fa-solid fa-scale-balanced text-cyan me-1.5"></i>RTIC <span class="text-gradient">EVAL</span>
+    </div>
+    <button id="mobile-home-qr-btn" class="btn btn-sm btn-gradient-eval px-2.5 py-1 font-outfit">
+      <i class="fa-solid fa-qrcode me-1"></i> Scan QR
+    </button>
+  </header>
+
+  <!-- Mobile Drawer Backdrop Overlay -->
+  <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+  <!-- Unauthenticated Login View Wrapper -->
+  <div id="login-section" class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
+    <div class="card login-card p-4 rounded-4 w-100" data-aos="fade-up">
+      <div class="card-body text-center">
+        <div class="mb-3">
+          <i class="fa-solid fa-shield-halved text-cyan fa-3x animate-pulse"></i>
+        </div>
+        <h3 class="font-outfit fw-bold text-white mb-2">Evaluator Portal</h3>
+        <p class="text-muted small mb-4">IEEE RAS Project Showcase 3.0 – Rural Tech Innovation Challenge</p>
+
+        <form id="login-form">
+          <div class="mb-3.5 text-start">
+            <label for="username" class="form-label text-muted small mb-1">Username</label>
+            <div class="input-group custom-input-group">
+              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+              <input type="text" class="form-control" id="username" required placeholder="e.g. evaluator1" autocomplete="username">
+            </div>
+          </div>
+
+          <div class="mb-4 text-start">
+            <label for="password" class="form-label text-muted small mb-1">Secure Password</label>
+            <div class="input-group custom-input-group">
+              <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+              <input type="password" class="form-control" id="password" required placeholder="••••••••••••" autocomplete="current-password">
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-gradient-eval w-100 py-3 font-outfit fw-bold">
+            <i class="fa-solid fa-lock-open me-2"></i> Access Dashboard
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Authenticated Application Layout (Sidebar + Views) -->
+  <div id="dashboard-section" class="app-container d-none">
+    
+    <!-- LEFT SIDEBAR MENU -->
+    <aside id="app-sidebar" class="sidebar">
+      <div class="sidebar-brand d-flex align-items-center justify-content-between">
+        <a class="text-decoration-none font-outfit fw-bold text-white fs-5" href="#">
+          <i class="fa-solid fa-scale-balanced text-cyan me-2"></i>RTIC <span class="text-gradient">EVAL</span>
+        </a>
+        <button id="sidebar-close-btn" class="btn btn-sm text-muted d-lg-none"><i class="fa-solid fa-xmark fs-5"></i></button>
+      </div>
+
+      <!-- Evaluator User Profile Badge -->
+      <div class="sidebar-user-badge">
+        <div class="d-flex align-items-center gap-2">
+          <div class="avatar-circle bg-cyan bg-opacity-20 text-cyan rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+          <div class="text-truncate">
+            <strong class="font-outfit text-white d-block text-truncate small" id="user-display">evaluator</strong>
+            <span class="badge bg-secondary bg-opacity-50 text-white font-outfit" style="font-size: 10px;" id="user-role-badge">Evaluator</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sidebar Navigation Items -->
+      <div class="sidebar-menu">
+        <div class="sidebar-label">Main Navigation</div>
+
+        <a class="nav-item-link active" data-view="home">
+          <span><i class="fa-solid fa-qrcode me-2.5 text-cyan"></i>Search & Camera Scan</span>
+          <i class="fa-solid fa-chevron-right small opacity-50"></i>
+        </a>
+
+        <a class="nav-item-link" data-view="pending">
+          <span><i class="fa-solid fa-clock text-warning me-2.5"></i>Pending Evaluation</span>
+          <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-pending-count">0</span>
+        </a>
+
+        <a class="nav-item-link" data-view="complete">
+          <span><i class="fa-solid fa-circle-check text-success me-2.5"></i>Graded Teams</span>
+          <span class="badge bg-success text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-complete-count">0</span>
+        </a>
+
+        <a class="nav-item-link" data-view="all">
+          <span><i class="fa-solid fa-users text-info me-2.5"></i>All Teams List</span>
+          <span class="badge bg-info text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-all-count">0</span>
+        </a>
+
+        <div class="sidebar-label mt-3">Analytics & Results</div>
+
+        <a class="nav-item-link" data-view="leaderboard">
+          <span><i class="fa-solid fa-trophy text-amber me-2.5" style="color: #ffb703;"></i>Live Leaderboard</span>
+          <i class="fa-solid fa-chevron-right small opacity-50"></i>
+        </a>
+      </div>
+
+      <!-- Sidebar Footer Options -->
+      <div class="sidebar-footer d-flex align-items-center justify-content-between">
+        <button id="theme-toggle" class="btn btn-outline-secondary btn-sm rounded-3 px-3 font-outfit text-white" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon me-1.5"></i> Theme
         </button>
-        <button id="btn-logout" class="btn btn-outline-danger font-outfit py-2 px-3 d-none">
+        <button id="btn-logout" class="btn btn-outline-danger btn-sm rounded-3 px-3 font-outfit">
           <i class="fa-solid fa-sign-out-alt me-1"></i> Logout
         </button>
       </div>
-    </div>
-  </nav>
+    </aside>
 
-  <!-- Main Container -->
-  <div class="container evaluation-container">
+    <!-- MAIN CONTENT VIEWS -->
+    <main class="main-content">
 
-    <!-- 1. LOGIN INTERFACE -->
-    <div id="login-section" class="row justify-content-center align-items-center" style="min-height: 65vh;">
-      <div class="col-md-5">
-        <div class="card login-card p-4 rounded-4" data-aos="fade-up">
-          <div class="card-body text-center">
-            <div class="mb-3">
-              <i class="fa-solid fa-shield-halved text-cyan fa-3x animate-pulse"></i>
+      <!-- VIEW 1: HOME & CAMERA QR CODE SCANNER -->
+      <section id="view-home" class="content-view">
+        <div class="row g-4 justify-content-center">
+          <div class="col-lg-10 col-xl-9">
+            
+            <!-- Hero Title Box -->
+            <div class="text-center mb-4">
+              <h2 class="font-outfit text-white fw-bold mb-2">Evaluation Home</h2>
+              <p class="text-muted">Search any team by Team ID / Leader Name / Reg No or Scan QR Code to open Evaluation Sheet instantly.</p>
             </div>
-            <h3 class="font-outfit fw-bold text-white mb-2">Evaluator Portal</h3>
-            <p class="text-muted small mb-4">IEEE RAS Project Showcase 3.0 – Rural Tech Innovation Challenge</p>
 
-            <form id="login-form">
-              <div class="mb-3.5 text-start">
-                <label for="username" class="form-label text-muted small mb-1">Username</label>
-                <div class="input-group custom-input-group">
-                  <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                  <input type="text" class="form-control" id="username" required placeholder="e.g. evaluator1" autocomplete="username">
-                </div>
+            <!-- CAMERA QR SCANNER WIDGET -->
+            <div class="qr-scanner-card mb-4 text-center">
+              <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="font-outfit text-white mb-0">
+                  <i class="fa-solid fa-camera text-cyan me-2"></i>Live Camera QR Code Scanner
+                </h5>
+                <button id="btn-toggle-scanner" class="btn btn-gradient-eval btn-sm font-outfit px-3 py-1.5">
+                  <i class="fa-solid fa-qrcode me-1.5"></i> Start Camera Scan
+                </button>
               </div>
 
-              <div class="mb-4 text-start">
-                <label for="password" class="form-label text-muted small mb-1">Secure Password</label>
-                <div class="input-group custom-input-group">
-                  <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-                  <input type="password" class="form-control" id="password" required placeholder="••••••••••••" autocomplete="current-password">
-                </div>
+              <div id="scanner-wrapper" class="d-none my-3">
+                <div id="qr-reader"></div>
+                <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-info-circle me-1"></i>Point your camera at team QR code (Team ID, Reg No, or Team Name)</p>
               </div>
+            </div>
 
-              <button type="submit" class="btn btn-gradient-eval w-100 py-3 font-outfit fw-bold">
-                <i class="fa-solid fa-lock-open me-2"></i> Access Dashboard
+            <!-- SEARCH BAR BOX -->
+            <div class="card glass-card p-3.5 border-glow mb-4">
+              <label for="home-search-input" class="form-label font-outfit text-cyan fw-bold mb-2">
+                <i class="fa-solid fa-magnifying-glass me-1.5"></i>Search Team Database
+              </label>
+              <div class="input-group custom-input-group">
+                <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
+                <input type="text" id="home-search-input" class="form-control" placeholder="Search by Team ID (e.g. RTIC0001), Leader Name, Reg No, or College...">
+              </div>
+            </div>
+
+            <!-- HOME SEARCH RESULTS CONTAINER -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="font-outfit text-white mb-0" id="home-results-title">Teams List</h5>
+              <button id="btn-home-refresh" class="btn btn-outline-info btn-sm font-outfit px-3">
+                <i class="fa-solid fa-rotate me-1"></i> Refresh
               </button>
-            </form>
+            </div>
+
+            <div id="home-teams-list">
+              <!-- Rendered dynamically -->
+            </div>
+
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <!-- 2. DASHBOARD INTERFACE (HIDDEN BY DEFAULT) -->
-    <div id="dashboard-section" class="row d-none">
-      <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-        <div>
-          <h2 class="font-outfit text-white mb-1">Evaluator Dashboard</h2>
-          <p class="text-muted mb-0">IEEE RAS Project Showcase 3.0 | Authenticated as: <strong class="text-cyan font-outfit" id="user-display">evaluator</strong></p>
-        </div>
-        <div class="d-flex gap-2">
-          <button id="btn-refresh" class="btn btn-outline-info font-outfit px-3">
-            <i class="fa-solid fa-rotate me-1"></i> Refresh Data
-          </button>
-        </div>
-      </div>
-
-      <!-- Navigation Tabs -->
-      <div class="col-12">
-        <ul class="nav nav-tabs nav-tabs-custom" id="evalTabs" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams-tab-pane" type="button" role="tab" aria-controls="teams-tab-pane" aria-selected="true">
-              <i class="fa-solid fa-users me-2"></i>Approved Teams
+      <!-- VIEW 2: TEAMS MANAGEMENT LIST (ALL / PENDING / GRADED) -->
+      <section id="view-teams" class="content-view d-none">
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+          <div>
+            <h2 class="font-outfit text-white mb-1" id="teams-view-title">All Teams</h2>
+            <p class="text-muted mb-0" id="teams-view-subtitle">Browse and evaluate team projects</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="btn-refresh-teams" class="btn btn-outline-info font-outfit px-3">
+              <i class="fa-solid fa-rotate me-1"></i> Refresh Data
             </button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#leaderboard-tab-pane" type="button" role="tab" aria-controls="leaderboard-tab-pane" aria-selected="false">
-              <i class="fa-solid fa-trophy me-2"></i>Live Leaderboard
-            </button>
-          </li>
-        </ul>
+          </div>
+        </div>
 
-        <div class="tab-content" id="evalTabsContent">
-          <!-- TABS 1: APPROVED TEAMS -->
-          <div class="tab-pane fade show active" id="teams-tab-pane" role="tabpanel" aria-labelledby="teams-tab" tabindex="0">
-            <!-- Search & Filters -->
-            <div class="card glass-card p-3 border-glow mb-4">
-              <div class="row g-3">
-                <div class="col-md-5">
-                  <div class="input-group custom-input-group">
-                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                    <input type="text" id="search-teams" class="form-control" placeholder="Search Team ID, Name, College...">
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <select id="filter-status" class="form-select bg-dark border-secondary text-white py-2.5">
-                    <option value="all">All Evaluated Status</option>
-                    <option value="pending">Pending My Evaluation</option>
-                    <option value="complete">Completed My Evaluation</option>
-                  </select>
-                </div>
-                <div class="col-md-3 text-md-end text-center d-flex align-items-center justify-content-md-end justify-content-center">
-                  <span id="teams-count" class="text-glow font-outfit text-white">0 Teams Found</span>
-                </div>
+        <!-- Search & Filter Controls -->
+        <div class="card glass-card p-3 border-glow mb-4">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <div class="input-group custom-input-group">
+                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <input type="text" id="search-teams" class="form-control" placeholder="Search Team ID, Name, College...">
               </div>
             </div>
-
-            <!-- Table of Teams (Desktop / Tablet) -->
-            <div class="table-responsive custom-table d-none d-md-block">
-              <table class="table mb-0 align-middle">
-                <thead>
-                  <tr>
-                    <th>Team ID</th>
-                    <th>Team Name</th>
-                    <th>Leader Name</th>
-                    <th>Round 1 (100)</th>
-                    <th>Round 2 (100)</th>
-                    <th>Grand Finale (100)</th>
-                    <th>Total (300)</th>
-                    <th class="text-center">Action</th>
-                  </tr>
-                </thead>
-                <tbody id="teams-tbody">
-                  <tr>
-                    <td colspan="8" class="text-center text-muted py-5">
-                      <div class="spinner-border text-cyan mb-2" role="status"></div>
-                      <div>Loading teams database...</div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="col-md-3">
+              <select id="filter-status" class="form-select bg-dark border-secondary text-white py-2.5">
+                <option value="all">All Evaluated Status</option>
+                <option value="pending">Pending My Evaluation</option>
+                <option value="complete">Completed My Evaluation</option>
+              </select>
             </div>
-
-            <!-- Mobile Response Sheet List for Teams (Smartphone View) -->
-            <div id="teams-mobile-container" class="d-block d-md-none">
-              <div class="text-center text-muted py-5">
-                <div class="spinner-border text-cyan mb-2" role="status"></div>
-                <div>Loading teams database...</div>
-              </div>
+            <div class="col-md-3 text-md-end text-center d-flex align-items-center justify-content-md-end justify-content-center">
+              <span id="teams-count" class="text-glow font-outfit text-white">0 Teams Found</span>
             </div>
           </div>
+        </div>
 
-          <!-- TABS 2: LIVE LEADERBOARD -->
-          <div class="tab-pane fade" id="leaderboard-tab-pane" role="tabpanel" aria-labelledby="leaderboard-tab" tabindex="0">
-            <!-- Leaderboard Options -->
-            <div class="card glass-card p-3 border-glow mb-4">
-              <div class="row g-3 align-items-center">
-                <div class="col-md-6">
-                  <h4 class="font-outfit text-white mb-0"><i class="fa-solid fa-medal text-warning me-2"></i>Rankings Overview</h4>
-                </div>
-                <div class="col-md-6 text-md-end">
-                  <div class="btn-group w-100 w-md-auto" role="group" aria-label="Sort Leaderboard By">
-                    <button type="button" class="btn btn-outline-cyan font-outfit active px-2.5 py-1.5 small" data-sort="overall">Overall Score</button>
-                    <button type="button" class="btn btn-outline-cyan font-outfit px-2.5 py-1.5 small" data-sort="day1">Round 1</button>
-                    <button type="button" class="btn btn-outline-cyan font-outfit px-2.5 py-1.5 small" data-sort="day2">Round 2</button>
-                    <button type="button" class="btn btn-outline-cyan font-outfit px-2.5 py-1.5 small" data-sort="day3">Grand Finale</button>
-                  </div>
-                </div>
-              </div>
+        <!-- Desktop Table View -->
+        <div class="table-responsive custom-table d-none d-md-block">
+          <table class="table mb-0 align-middle">
+            <thead>
+              <tr>
+                <th>Team ID</th>
+                <th>Team Name</th>
+                <th>Leader Name</th>
+                <th>Round 1 (100)</th>
+                <th>Round 2 (100)</th>
+                <th>Grand Finale (100)</th>
+                <th>Total (300)</th>
+                <th class="text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody id="teams-tbody">
+              <tr>
+                <td colspan="8" class="text-center text-muted py-5">
+                  <div class="spinner-border text-cyan mb-2" role="status"></div>
+                  <div>Loading teams database...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Card List View -->
+        <div id="teams-mobile-container" class="d-block d-md-none">
+          <div class="text-center text-muted py-5">
+            <div class="spinner-border text-cyan mb-2" role="status"></div>
+            <div>Loading teams database...</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: LIVE LEADERBOARD -->
+      <section id="view-leaderboard" class="content-view d-none">
+        <div class="card glass-card p-3.5 border-glow mb-4">
+          <div class="row g-3 align-items-center">
+            <div class="col-md-6">
+              <h3 class="font-outfit text-white mb-0"><i class="fa-solid fa-trophy text-warning me-2"></i>Live Leaderboard Rankings</h3>
             </div>
-
-            <!-- Leaderboard Table (Desktop) -->
-            <div class="table-responsive custom-table d-none d-md-block">
-              <table class="table mb-0 align-middle text-center">
-                <thead>
-                  <tr>
-                    <th>Rank</th>
-                    <th>Team ID</th>
-                    <th>Team Name</th>
-                    <th>College</th>
-                    <th>Round 1</th>
-                    <th>Round 2</th>
-                    <th>Grand Finale</th>
-                    <th>Overall Total</th>
-                  </tr>
-                </thead>
-                <tbody id="leaderboard-tbody">
-                  <tr>
-                    <td colspan="8" class="text-center text-muted py-5">
-                      <div class="spinner-border text-cyan mb-2" role="status"></div>
-                      <div>Loading leaderboard...</div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-            <!-- Leaderboard Cards (Mobile) -->
-            <div id="leaderboard-mobile-container" class="d-block d-md-none">
-              <div class="text-center text-muted py-5">
-                <div class="spinner-border text-cyan mb-2" role="status"></div>
-                <div>Loading leaderboard...</div>
+            <div class="col-md-6 text-md-end">
+              <div class="btn-group w-100 w-md-auto" role="group" aria-label="Sort Leaderboard By">
+                <button type="button" class="btn btn-outline-cyan font-outfit active px-3 py-2 small" data-sort="overall">Overall Score</button>
+                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day1">Round 1</button>
+                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day2">Round 2</button>
+                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day3">Grand Finale</button>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
+        <!-- Desktop Leaderboard Table -->
+        <div class="table-responsive custom-table d-none d-md-block">
+          <table class="table mb-0 align-middle text-center">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Team ID</th>
+                <th>Team Name</th>
+                <th>College</th>
+                <th>Round 1</th>
+                <th>Round 2</th>
+                <th>Grand Finale</th>
+                <th>Overall Total</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-tbody">
+              <tr>
+                <td colspan="8" class="text-center text-muted py-5">
+                  <div class="spinner-border text-cyan mb-2" role="status"></div>
+                  <div>Loading leaderboard...</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Mobile Leaderboard Card List -->
+        <div id="leaderboard-mobile-container" class="d-block d-md-none">
+          <div class="text-center text-muted py-5">
+            <div class="spinner-border text-cyan mb-2" role="status"></div>
+            <div>Loading leaderboard...</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
   </div>
 
-  <!-- 3. SCORING SHEET DIALOG MODAL (MOBILE BOTTOM RESPONSE SHEET / DESKTOP DIALOG) -->
+  <!-- SCORING SHEET DIALOG MODAL (MOBILE RESPONSE SHEET / DESKTOP DIALOG) -->
   <dialog id="evaluationModal" aria-labelledby="modalTitle">
     <div class="sheet-drag-handle"></div>
     <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
@@ -722,7 +939,7 @@
     <form id="evaluation-form">
       <input type="hidden" id="eval-team-id">
       
-      <!-- Day Selector display -->
+      <!-- Day Selector duration display -->
       <div class="alert alert-dark border-secondary d-flex justify-content-between align-items-center mb-3 py-2">
         <span class="font-outfit small" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Presentation + 5 min Q&A)</span>
         <span class="badge bg-cyan text-dark font-outfit px-3 py-1.5 fw-bold" id="eval-day-title">Round 1</span>
@@ -730,6 +947,7 @@
 
       <!-- CRITERIA SECTION -->
       <div id="criteria-container" style="max-height: 380px; overflow-y: auto; padding-right: 5px;">
+        
         <!-- Round 1: Ideation (15 August 2026) -->
         <div id="criteria-day1-group" class="day-group">
           <div class="criteria-card">
@@ -963,15 +1181,16 @@
             </div>
           </div>
         </div>
+
       </div>
 
-      <!-- Feedback Area -->
+      <!-- Evaluator Feedback Notes -->
       <div class="mb-3 mt-3">
         <label for="eval-feedback" class="form-label text-muted small mb-1">Evaluator Feedback / Jury Notes</label>
         <textarea id="eval-feedback" class="form-control bg-dark border-secondary text-white" rows="2" placeholder="Enter constructive feedback for the team..."></textarea>
       </div>
 
-      <!-- Live Calculation & Save -->
+      <!-- Live Total Calculation & Save Action -->
       <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
         <div>
           <span class="text-muted small d-block">Round Total:</span>
@@ -990,7 +1209,7 @@
   <!-- Notification Toast Container -->
   <div class="toast-container-custom" id="toast-container"></div>
 
-  <!-- BootStrap & Custom JS -->
+  <!-- BootStrap & Application Logic JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/evaluation/evaluation.js"></script>
 
