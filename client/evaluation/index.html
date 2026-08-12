@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="Secure Evaluation Portal for RTIC 3.0.">
   <meta name="author" content="RTIC Team">
@@ -20,530 +20,316 @@
     href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <!-- CDNs: Bootstrap 5, FontAwesome, Html5Qrcode -->
+  <!-- CDNs: Bootstrap 5, FontAwesome -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
 
   <!-- Custom Styles -->
   <link rel="stylesheet" href="/assets/css/style.css">
 
   <style>
-    /* Clean Minimal Dark Slate Theme */
+    /* Autofill Fix for Dark Cyber Theme */
     input:-webkit-autofill,
     input:-webkit-autofill:hover, 
     input:-webkit-autofill:focus, 
     input:-webkit-autofill:active {
-      -webkit-box-shadow: 0 0 0 30px #0d1117 inset !important;
-      -webkit-text-fill-color: #f0f6fc !important;
+      -webkit-box-shadow: 0 0 0 30px #0c0205 inset !important;
+      -webkit-text-fill-color: #ffffff !important;
       transition: background-color 5000s ease-in-out 0s;
     }
 
-    html, body {
-      width: 100% !important;
-      max-width: 100vw !important;
-      overflow-x: hidden !important;
-      position: relative;
-      margin: 0;
-      padding: 0;
-      background-color: #0d1117;
-      color: #c9d1d9;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      min-height: 100vh;
+    body {
+      background-color: #070103;
     }
 
     body::before {
-      display: none !important;
+      opacity: 0.75;
+      background: linear-gradient(to bottom, rgba(7, 1, 3, 0.75) 0%, rgba(7, 1, 3, 0.95) 100%), url('/assets/images/robot_bg.png') no-repeat center top;
+      background-size: cover;
     }
 
-    /* Left Sidebar Navigation Layout */
-    .app-container {
-      display: flex;
-      width: 100% !important;
-      max-width: 100vw !important;
-      min-height: 100vh;
-      overflow-x: hidden !important;
-    }
-
-    .sidebar {
-      width: 270px;
-      background: #161b22;
-      border-right: 1px solid #30363d;
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      z-index: 2000;
-      transition: transform 0.25s ease;
-    }
-
-    .sidebar-brand {
-      padding: 20px;
-      border-bottom: 1px solid #30363d;
-    }
-
-    .sidebar-user-badge {
-      padding: 12px 14px;
-      margin: 14px 14px 4px 14px;
-      background: #21262d;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-    }
-
-    .sidebar-menu {
-      padding: 12px;
-      flex: 1 1 auto;
-      overflow-y: auto;
-    }
-
-    .sidebar-label {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      color: #8b949e;
-      margin: 14px 0 6px 10px;
-      font-weight: 700;
-    }
-
-    .nav-item-link {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 11px 14px;
-      color: #8b949e;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 14px;
-      text-decoration: none;
-      transition: all 0.15s ease;
-      margin-bottom: 4px;
-      cursor: pointer;
-      border: 1px solid transparent;
-      touch-action: manipulation;
-    }
-
-    .nav-item-link i {
-      font-size: 15px;
-      width: 22px;
-      text-align: center;
-    }
-
-    .nav-item-link:hover {
-      background: #21262d;
-      color: #f0f6fc;
-    }
-
-    .nav-item-link.active {
-      background: #1f6feb;
-      color: #ffffff !important;
-      border-color: #388bfd;
-    }
-
-    .sidebar-footer {
-      padding: 14px;
-      border-top: 1px solid #30363d;
-    }
-
-    .main-content {
-      flex: 1 1 auto;
-      min-width: 0 !important;
-      width: 100% !important;
-      max-width: 100vw !important;
-      margin-left: 270px;
-      padding: 24px;
-      min-height: 100vh;
-      box-sizing: border-box !important;
-      overflow-x: hidden !important;
-      transition: margin-left 0.25s ease;
-    }
-
-    .mobile-header {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 60px;
-      background: #161b22;
-      border-bottom: 1px solid #30363d;
-      z-index: 1030;
-      padding: 0 16px;
-    }
-
-    .sidebar-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.75);
-      z-index: 1999;
-    }
-
-    .sidebar-overlay.show {
-      display: block;
-    }
-
-    /* Cards & Form Components */
-    .card-clean {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
-      padding: 20px;
+    .evaluation-container {
+      margin-top: 100px;
+      min-height: 80vh;
     }
 
     .login-card {
-      max-width: 420px;
+      max-width: 460px;
       margin: 60px auto;
-      border: 1px solid #30363d;
-      background: #161b22;
-      border-radius: 16px !important;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      border: 1px solid rgba(255, 0, 85, 0.25);
+      box-shadow: 0 15px 40px rgba(255, 0, 85, 0.2), 0 0 20px rgba(0, 0, 0, 0.8);
+      background: rgba(18, 4, 8, 0.85);
+      backdrop-filter: blur(16px);
+      border-radius: 20px !important;
     }
 
     .custom-input-group {
-      background-color: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 8px;
+      background-color: #0c0205;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
       overflow: hidden;
+      transition: all 0.3s ease;
     }
 
     .custom-input-group:focus-within {
-      border-color: #58a6ff;
-      box-shadow: 0 0 0 3px rgba(56, 139, 253, 0.15);
+      border-color: var(--cyan);
+      box-shadow: 0 0 15px rgba(255, 0, 85, 0.35);
     }
 
     .custom-input-group .input-group-text {
       background: transparent;
       border: none;
       color: #8b949e;
-      padding-left: 14px;
+      padding-left: 15px;
     }
 
     .custom-input-group .form-control {
       background: transparent !important;
       border: none !important;
-      color: #f0f6fc !important;
-      padding: 12px 14px;
-      font-size: 14px;
+      color: #ffffff !important;
+      padding: 14px 15px;
+      font-size: 15px;
       box-shadow: none !important;
     }
 
-    .btn-primary-clean {
-      background: #1f6feb;
+    .btn-gradient-eval {
+      background: linear-gradient(135deg, var(--cyan) 0%, #ff6b00 100%);
       color: #fff;
-      border: 1px solid #388bfd;
-      font-weight: 600;
-      border-radius: 8px;
-      padding: 10px 16px;
-      touch-action: manipulation;
-      transition: background 0.15s ease;
-    }
-
-    .btn-primary-clean:hover {
-      background: #388bfd;
-      color: #fff;
-    }
-
-    /* QR Code Scanner Box */
-    .qr-scanner-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 14px;
-      padding: 20px;
-    }
-
-    #qr-reader {
-      width: 100%;
-      max-width: 440px;
-      margin: 0 auto;
+      border: none;
+      font-family: var(--font-title);
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(255, 0, 85, 0.35);
       border-radius: 12px;
-      overflow: hidden;
-      border: 1px dashed #30363d;
-      background: #0d1117;
     }
 
-    #qr-reader video {
-      width: 100% !important;
-      border-radius: 10px;
-      object-fit: cover;
+    .btn-gradient-eval:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(255, 0, 85, 0.6);
+      color: #fff;
+    }
+
+    .nav-tabs-custom {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .nav-tabs-custom .nav-link {
+      color: var(--text-main);
+      border: none;
+      font-family: var(--font-title);
+      font-weight: 600;
+      padding: 14px 24px;
+      position: relative;
+      background: transparent;
+      opacity: 0.65;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    .nav-tabs-custom .nav-link:hover {
+      opacity: 1;
+      color: var(--cyan);
+    }
+
+    .nav-tabs-custom .nav-link.active {
+      background: transparent;
+      color: var(--cyan);
+      opacity: 1;
+    }
+
+    .nav-tabs-custom .nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--cyan), var(--purple));
+      border-radius: 3px 3px 0 0;
     }
 
     .custom-table {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 12px;
+      background: rgba(18, 4, 8, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
     .custom-table th {
-      background-color: #21262d !important;
-      color: #f0f6fc;
-      font-weight: 600;
-      border-bottom: 1px solid #30363d !important;
+      background-color: rgba(255, 0, 85, 0.1) !important;
+      color: var(--cyan);
+      font-family: var(--font-title);
+      font-weight: 700;
+      border-bottom: 2px solid rgba(255, 0, 85, 0.25) !important;
+      text-transform: uppercase;
       font-size: 13px;
-      padding: 14px 16px;
+      letter-spacing: 1px;
+      padding: 16px;
     }
 
     .custom-table td {
-      padding: 14px 16px;
+      padding: 16px;
       vertical-align: middle;
-      border-bottom: 1px solid #21262d;
-      color: #c9d1d9;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      background-color: transparent !important;
+      color: var(--text-main);
     }
 
     .custom-table tr:hover td {
-      background-color: rgba(255, 255, 255, 0.02) !important;
+      background-color: rgba(255, 255, 255, 0.03) !important;
     }
 
-    /* Native Dialog */
+    /* Native Dialog Display Override Fix */
     dialog:not([open]) {
       display: none !important;
     }
 
     dialog[open] {
-      display: flex !important;
-      flex-direction: column !important;
-      border: 1px solid #30363d;
-      border-radius: 16px;
-      background: #161b22;
-      color: #c9d1d9;
-      padding: 20px;
+      display: block !important;
+    }
+
+    dialog {
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      border-radius: 20px;
+      background: rgba(14, 3, 7, 0.96);
+      color: var(--text-main);
+      padding: 32px;
       width: 92%;
-      max-width: 720px;
-      max-height: 88vh;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9);
-      position: fixed !important;
-      top: 50% !important;
-      left: 50% !important;
-      transform: translate(-50%, -50%) !important;
-      margin: 0 !important;
-      z-index: 99999 !important;
+      max-width: 760px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.85), 0 0 30px rgba(255, 0, 85, 0.2);
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      margin: 0;
+      z-index: 1050;
     }
 
     dialog::backdrop {
-      background-color: rgba(0, 0, 0, 0.8) !important;
-      z-index: 99998 !important;
+      background-color: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(10px);
     }
 
     .criteria-card {
-      background: #0d1117;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 14px;
-      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .criteria-card:hover {
+      border-color: rgba(255, 0, 85, 0.25);
+      background: rgba(255, 0, 85, 0.02);
     }
 
     .criteria-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
 
     .criteria-title {
+      font-family: var(--font-title);
       font-weight: 600;
-      font-size: 14px;
-      color: #f0f6fc;
+      font-size: 15px;
+      color: #ffffff;
     }
 
     .criteria-max-marks {
-      font-size: 11px;
-      background: rgba(56, 139, 253, 0.15);
-      color: #58a6ff;
-      padding: 3px 8px;
-      border-radius: 12px;
-      font-weight: 600;
+      font-size: 12px;
+      background: rgba(255, 183, 3, 0.15);
+      color: var(--purple);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: bold;
     }
 
     .score-input {
-      background-color: #161b22 !important;
-      border: 1px solid #30363d !important;
-      color: #f0f6fc !important;
-      font-weight: 700;
+      background-color: #080103 !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: #ffffff !important;
+      font-weight: bold;
       text-align: center;
-      font-size: 16px;
-      width: 60px;
-      border-radius: 6px;
-      padding: 6px 4px;
-      -moz-appearance: textfield;
+      font-size: 18px;
+      width: 85px;
+      border-radius: 8px;
+      padding: 8px;
     }
 
     .score-input:focus {
-      border-color: #58a6ff !important;
-      box-shadow: 0 0 0 2px rgba(56, 139, 253, 0.2) !important;
+      border-color: var(--cyan) !important;
+      box-shadow: 0 0 12px rgba(255, 0, 85, 0.4) !important;
     }
 
     .score-input:disabled {
-      background-color: #21262d !important;
-      color: #484f58 !important;
+      background-color: rgba(255, 255, 255, 0.04) !important;
+      color: rgba(255, 255, 255, 0.25) !important;
       border-color: transparent !important;
     }
 
-    .btn-step-score {
-      width: 36px;
-      height: 36px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      border: 1px solid #30363d;
-      background: #21262d;
-      color: #f0f6fc;
-      touch-action: manipulation;
-    }
-
-    .btn-step-score:hover {
-      background: #30363d;
-      color: #ffffff;
+    .total-badge {
+      font-size: 1.2rem;
+      background: linear-gradient(135deg, rgba(255, 0, 85, 0.15) 0%, rgba(255, 183, 3, 0.15) 100%);
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      padding: 8px 18px;
+      border-radius: 10px;
+      font-family: var(--font-title);
+      font-weight: bold;
+      color: var(--purple);
+      display: inline-block;
     }
 
     .badge-status {
       font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 12px;
+      padding: 5px 12px;
+      border-radius: 20px;
       font-weight: 600;
     }
 
     .badge-status.complete {
-      background-color: rgba(46, 160, 67, 0.15);
-      color: #3fb950;
-      border: 1px solid rgba(46, 160, 67, 0.3);
+      background-color: rgba(46, 204, 113, 0.15);
+      color: #2ecc71;
+      border: 1px solid rgba(46, 204, 113, 0.3);
     }
 
     .badge-status.pending {
-      background-color: rgba(210, 153, 34, 0.15);
-      color: #d29922;
-      border: 1px solid rgba(210, 153, 34, 0.3);
+      background-color: rgba(241, 196, 15, 0.15);
+      color: #f1c40f;
+      border: 1px solid rgba(241, 196, 15, 0.3);
     }
 
-    .mobile-team-card {
-      background: #161b22;
-      border: 1px solid #30363d;
+    .toast-container-custom {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 1060;
+    }
+
+    .toast-custom {
+      background: rgba(15, 3, 7, 0.95);
+      border: 1px solid rgba(255, 0, 85, 0.3);
+      color: var(--text-main);
+      min-width: 280px;
       border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 12px;
-      width: 100%;
-      box-sizing: border-box;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
     }
 
-    .modal-footer-sticky {
-      flex: 0 0 auto;
-      position: sticky;
-      bottom: 0;
-      background: #161b22;
-      border-top: 1px solid #30363d;
-      padding-top: 12px;
-      margin-top: 8px;
-      z-index: 10;
+    .round-switcher .btn {
+      font-size: 13px;
+      padding: 8px 12px;
+      border-color: rgba(255, 255, 255, 0.15);
     }
 
-    /* Media Queries for Mobile Responsiveness */
-    @media (max-width: 991px) {
-      .sidebar {
-        transform: translateX(-100%);
-      }
-
-      .sidebar.show {
-        transform: translateX(0);
-        box-shadow: 10px 0 35px rgba(0, 0, 0, 0.9);
-      }
-
-      .main-content {
-        margin-left: 0 !important;
-        padding: 16px 12px 24px 12px !important;
-        margin-top: 60px !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
-        overflow-x: hidden !important;
-      }
-
-      .mobile-header {
-        display: flex;
-      }
-
-      .sheet-drag-handle {
-        display: block;
-        width: 40px;
-        height: 4px;
-        background: #484f58;
-        border-radius: 4px;
-        margin: 0 auto 10px auto;
-      }
-
-      dialog[open] {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 0 !important;
-        left: 0 !important;
-        right: 0 !important;
-        transform: none !important;
-        width: 100vw !important;
-        max-width: 100vw !important;
-        height: 92vh !important;
-        max-height: 92vh !important;
-        background: #161b22 !important;
-        border: 1px solid #30363d !important;
-        border-radius: 20px 20px 0 0 !important;
-        padding: 16px 16px 12px 16px !important;
-        margin: 0 !important;
-        box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.95) !important;
-        border-bottom: none !important;
-        display: flex !important;
-        flex-direction: column !important;
-        z-index: 99999 !important;
-        animation: slideUpSheet 0.25s ease-out !important;
-      }
-
-      @keyframes slideUpSheet {
-        from { transform: translateY(100%); }
-        to { transform: translateY(0); }
-      }
-
-      .round-switcher {
-        display: flex !important;
-        overflow-x: auto;
-        white-space: nowrap;
-        gap: 6px;
-        padding-bottom: 6px;
-        scroll-snap-type: x mandatory;
-        -webkit-overflow-scrolling: touch;
-      }
-
-      .round-switcher .btn {
-        flex: 0 0 auto;
-        font-size: 12px;
-        padding: 8px 12px;
-        scroll-snap-align: start;
-        border-radius: 8px !important;
-      }
-
-      #evaluation-form {
-        display: flex;
-        flex-direction: column;
-        flex: 1 1 auto;
-        overflow: hidden;
-      }
-
-      #criteria-container {
-        max-height: none !important;
-        flex: 1 1 auto;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        padding-right: 4px;
-        margin-bottom: 8px;
-      }
-
-      .criteria-card {
-        padding: 12px;
-        margin-bottom: 10px;
-      }
-
-      .score-input {
-        width: 54px;
-        font-size: 16px;
-      }
+    .round-switcher .btn.active {
+      background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);
+      color: #fff;
+      border-color: transparent;
     }
   </style>
 </head>
@@ -561,335 +347,197 @@
     </div>
   </div>
 
-  <!-- Mobile Top Header Bar -->
-  <header class="mobile-header align-items-center justify-content-between">
-    <button id="sidebar-toggle" class="btn btn-gradient-eval px-3 py-1.5 font-outfit d-flex align-items-center gap-1.5" aria-label="Toggle Sidebar Menu">
-      <i class="fa-solid fa-bars fs-6"></i>
-      <span class="fw-bold" style="font-size: 13px;">MENU</span>
-    </button>
-    <div class="font-outfit fw-bold text-white fs-6">
-      <i class="fa-solid fa-scale-balanced text-cyan me-1"></i>RTIC <span class="text-gradient">EVAL</span>
-    </div>
-    <button id="mobile-home-qr-btn" class="btn btn-sm btn-outline-cyan px-2.5 py-1 font-outfit">
-      <i class="fa-solid fa-qrcode me-1"></i> Camera
-    </button>
-  </header>
-
-  <!-- Mobile Drawer Backdrop Overlay -->
-  <div id="sidebar-overlay" class="sidebar-overlay"></div>
-
-  <!-- Unauthenticated Login View Wrapper -->
-  <div id="login-section" class="container d-flex justify-content-center align-items-center" style="min-height: 90vh;">
-    <div class="card login-card p-4 rounded-4 w-100" data-aos="fade-up">
-      <div class="card-body text-center">
-        <div class="mb-3">
-          <i class="fa-solid fa-shield-halved text-cyan fa-3x animate-pulse"></i>
-        </div>
-        <h3 class="font-outfit fw-bold text-white mb-2">Evaluator Portal</h3>
-        <p class="text-muted small mb-4">IEEE RAS Project Showcase 3.0 – Rural Tech Innovation Challenge</p>
-
-        <form id="login-form">
-          <div class="mb-3.5 text-start">
-            <label for="username" class="form-label text-muted small mb-1">Username</label>
-            <div class="input-group custom-input-group">
-              <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-              <input type="text" class="form-control" id="username" required placeholder="e.g. evaluator1" autocomplete="username">
-            </div>
-          </div>
-
-          <div class="mb-4 text-start">
-            <label for="password" class="form-label text-muted small mb-1">Secure Password</label>
-            <div class="input-group custom-input-group">
-              <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-              <input type="password" class="form-control" id="password" required placeholder="••••••••••••" autocomplete="current-password">
-            </div>
-          </div>
-
-          <button type="submit" class="btn btn-gradient-eval w-100 py-3 font-outfit fw-bold">
-            <i class="fa-solid fa-lock-open me-2"></i> Access Dashboard
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-
-  <!-- Authenticated Application Layout (Sidebar + Views) -->
-  <div id="dashboard-section" class="app-container d-none">
-    
-    <!-- LEFT SIDEBAR MENU -->
-    <aside id="app-sidebar" class="sidebar">
-      <div class="sidebar-brand d-flex align-items-center justify-content-between">
-        <a class="text-decoration-none font-outfit fw-bold text-white fs-5" href="#">
-          <i class="fa-solid fa-scale-balanced text-cyan me-2"></i>RTIC <span class="text-gradient">EVAL</span>
-        </a>
-        <button id="sidebar-close-btn" class="btn btn-sm text-muted d-lg-none"><i class="fa-solid fa-xmark fs-5"></i></button>
-      </div>
-
-      <!-- Evaluator User Profile Badge -->
-      <div class="sidebar-user-badge">
-        <div class="d-flex align-items-center gap-2">
-          <div class="avatar-circle bg-cyan bg-opacity-20 text-cyan rounded-circle p-2 d-flex align-items-center justify-content-center" style="width:36px; height:36px;">
-            <i class="fa-solid fa-user-check"></i>
-          </div>
-          <div class="text-truncate">
-            <strong class="font-outfit text-white d-block text-truncate small" id="user-display">evaluator</strong>
-            <span class="badge bg-secondary bg-opacity-50 text-white font-outfit" style="font-size: 10px;" id="user-role-badge">Evaluator</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Sidebar Navigation Items -->
-      <div class="sidebar-menu">
-        <div class="sidebar-label">Main Navigation</div>
-
-        <a class="nav-item-link active" data-view="home">
-          <span><i class="fa-solid fa-qrcode me-2.5 text-cyan"></i>Search & Camera Scan</span>
-          <i class="fa-solid fa-chevron-right small opacity-50"></i>
-        </a>
-
-        <a class="nav-item-link" data-view="pending">
-          <span><i class="fa-solid fa-clock text-warning me-2.5"></i>Pending Evaluation</span>
-          <span class="badge bg-warning text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-pending-count">0</span>
-        </a>
-
-        <a class="nav-item-link" data-view="complete">
-          <span><i class="fa-solid fa-circle-check text-success me-2.5"></i>Graded Teams</span>
-          <span class="badge bg-success text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-complete-count">0</span>
-        </a>
-
-        <a class="nav-item-link" data-view="all">
-          <span><i class="fa-solid fa-users text-info me-2.5"></i>All Teams List</span>
-          <span class="badge bg-info text-dark rounded-pill px-2 py-0.5 font-outfit small" id="badge-all-count">0</span>
-        </a>
-
-        <div class="sidebar-label mt-3">Analytics & Results</div>
-
-        <a class="nav-item-link" data-view="leaderboard">
-          <span><i class="fa-solid fa-trophy text-amber me-2.5" style="color: #ffb703;"></i>Live Leaderboard</span>
-          <i class="fa-solid fa-chevron-right small opacity-50"></i>
-        </a>
-      </div>
-
-      <!-- Sidebar Footer Options -->
-      <div class="sidebar-footer d-flex align-items-center justify-content-between">
-        <button id="theme-toggle" class="btn btn-outline-secondary btn-sm rounded-3 px-3 font-outfit text-white" aria-label="Toggle Theme">
-          <i class="fa-solid fa-moon me-1.5"></i> Theme
+  <!-- Navigation Bar -->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="main-nav">
+    <div class="container">
+      <a class="navbar-brand font-outfit fw-bold" href="#">
+        <i class="fa-solid fa-scale-balanced text-cyan me-2"></i>RTIC <span class="text-gradient">EVALUATION</span>
+      </a>
+      <div class="ms-auto d-flex align-items-center">
+        <button id="theme-toggle" class="btn btn-theme-toggle me-3" aria-label="Toggle Theme">
+          <i class="fa-solid fa-moon"></i>
         </button>
-        <button id="btn-logout" class="btn btn-outline-danger btn-sm rounded-3 px-3 font-outfit">
+        <button id="btn-logout" class="btn btn-outline-danger font-outfit py-2 px-3 d-none">
           <i class="fa-solid fa-sign-out-alt me-1"></i> Logout
         </button>
       </div>
-    </aside>
+    </div>
+  </nav>
 
-    <!-- MAIN CONTENT VIEWS -->
-    <main class="main-content">
+  <!-- Main Container -->
+  <div class="container evaluation-container">
 
-      <!-- Top Mobile Navigation Quick-Menu Bar -->
-      <div class="mobile-menu-bar d-lg-none mb-3">
-        <div class="d-flex overflow-auto gap-2 pb-1" style="white-space: nowrap; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;">
-          <button class="btn btn-sm btn-gradient-eval font-outfit px-3 py-2 rounded-3 nav-item-link active border-0" data-view="home">
-            <i class="fa-solid fa-qrcode me-1.5"></i> Scan / Search
-          </button>
-          <button class="btn btn-sm btn-outline-warning font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="pending">
-            <i class="fa-solid fa-clock text-warning me-1.5"></i> Pending (<span id="mob-badge-pending">0</span>)
-          </button>
-          <button class="btn btn-sm btn-outline-success font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="complete">
-            <i class="fa-solid fa-circle-check text-success me-1.5"></i> Graded (<span id="mob-badge-complete">0</span>)
-          </button>
-          <button class="btn btn-sm btn-outline-info font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="all">
-            <i class="fa-solid fa-users text-info me-1.5"></i> All Teams (<span id="mob-badge-all">0</span>)
-          </button>
-          <button class="btn btn-sm btn-outline-light font-outfit px-3 py-2 rounded-3 text-white nav-item-link" data-view="leaderboard">
-            <i class="fa-solid fa-trophy text-amber me-1.5" style="color: #ffb703;"></i> Leaderboard
+    <!-- 1. LOGIN INTERFACE -->
+    <div id="login-section" class="row justify-content-center align-items-center" style="min-height: 65vh;">
+      <div class="col-md-5">
+        <div class="card login-card p-4 rounded-4" data-aos="fade-up">
+          <div class="card-body text-center">
+            <div class="mb-3">
+              <i class="fa-solid fa-shield-halved text-cyan fa-3x animate-pulse"></i>
+            </div>
+            <h3 class="font-outfit fw-bold text-white mb-2">Evaluator Portal</h3>
+            <p class="text-muted small mb-4">IEEE RAS Project Showcase 3.0 – Rural Tech Innovation Challenge</p>
+
+            <form id="login-form">
+              <div class="mb-3.5 text-start">
+                <label for="username" class="form-label text-muted small mb-1">Username</label>
+                <div class="input-group custom-input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                  <input type="text" class="form-control" id="username" required placeholder="e.g. evaluator1" autocomplete="username">
+                </div>
+              </div>
+
+              <div class="mb-4 text-start">
+                <label for="password" class="form-label text-muted small mb-1">Secure Password</label>
+                <div class="input-group custom-input-group">
+                  <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                  <input type="password" class="form-control" id="password" required placeholder="••••••••••••" autocomplete="current-password">
+                </div>
+              </div>
+
+              <button type="submit" class="btn btn-gradient-eval w-100 py-3 font-outfit fw-bold">
+                <i class="fa-solid fa-lock-open me-2"></i> Access Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. DASHBOARD INTERFACE (HIDDEN BY DEFAULT) -->
+    <div id="dashboard-section" class="row d-none">
+      <div class="col-12 mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+          <h2 class="font-outfit text-white mb-1">Evaluator Dashboard</h2>
+          <p class="text-muted mb-0">IEEE RAS Project Showcase 3.0 | Authenticated as: <strong class="text-cyan font-outfit" id="user-display">evaluator</strong></p>
+        </div>
+        <div class="d-flex gap-2">
+          <button id="btn-refresh" class="btn btn-outline-info font-outfit px-3">
+            <i class="fa-solid fa-rotate me-1"></i> Refresh Data
           </button>
         </div>
       </div>
 
-      <!-- VIEW 1: HOME & CAMERA QR CODE SCANNER -->
-      <section id="view-home" class="content-view">
-        <div class="row g-4 justify-content-center">
-          <div class="col-lg-10 col-xl-9">
-            
-            <!-- Hero Title Box -->
-            <div class="text-center mb-4">
-              <h2 class="font-outfit text-white fw-bold mb-2">Evaluation Home</h2>
-              <p class="text-muted">Search any team by Team ID / Leader Name / Reg No or Scan QR Code to open Evaluation Sheet instantly.</p>
-            </div>
-
-            <!-- CAMERA QR SCANNER WIDGET -->
-            <div class="qr-scanner-card mb-4 text-center">
-              <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="font-outfit text-white mb-0">
-                  <i class="fa-solid fa-camera text-cyan me-2"></i>Live Camera QR Code Scanner
-                </h5>
-                <button id="btn-toggle-scanner" class="btn btn-gradient-eval btn-sm font-outfit px-3 py-1.5">
-                  <i class="fa-solid fa-qrcode me-1.5"></i> Start Camera Scan
-                </button>
-              </div>
-
-              <div id="scanner-wrapper" class="d-none my-3">
-                <div id="qr-reader"></div>
-                <p class="text-muted small mt-2 mb-0"><i class="fa-solid fa-info-circle me-1"></i>Point your camera at team QR code (Team ID, Reg No, or Team Name)</p>
-              </div>
-            </div>
-
-            <!-- SEARCH BAR BOX -->
-            <div class="card glass-card p-3.5 border-glow mb-4">
-              <label for="home-search-input" class="form-label font-outfit text-cyan fw-bold mb-2">
-                <i class="fa-solid fa-magnifying-glass me-1.5"></i>Search Team Database
-              </label>
-              <div class="input-group custom-input-group">
-                <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
-                <input type="text" id="home-search-input" class="form-control" placeholder="Search by Team ID (e.g. RTIC0001), Leader Name, Reg No, or College...">
-              </div>
-            </div>
-
-            <!-- HOME SEARCH RESULTS CONTAINER -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="font-outfit text-white mb-0" id="home-results-title">Teams List</h5>
-              <button id="btn-home-refresh" class="btn btn-outline-info btn-sm font-outfit px-3">
-                <i class="fa-solid fa-rotate me-1"></i> Refresh
-              </button>
-            </div>
-
-            <div id="home-teams-list">
-              <!-- Rendered dynamically -->
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 2: TEAMS MANAGEMENT LIST (ALL / PENDING / GRADED) -->
-      <section id="view-teams" class="content-view d-none">
-        <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
-          <div>
-            <h2 class="font-outfit text-white mb-1" id="teams-view-title">All Teams</h2>
-            <p class="text-muted mb-0" id="teams-view-subtitle">Browse and evaluate team projects</p>
-          </div>
-          <div class="d-flex gap-2">
-            <button id="btn-refresh-teams" class="btn btn-outline-info font-outfit px-3">
-              <i class="fa-solid fa-rotate me-1"></i> Refresh Data
+      <!-- Navigation Tabs -->
+      <div class="col-12">
+        <ul class="nav nav-tabs nav-tabs-custom" id="evalTabs" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="teams-tab" data-bs-toggle="tab" data-bs-target="#teams-tab-pane" type="button" role="tab" aria-controls="teams-tab-pane" aria-selected="true">
+              <i class="fa-solid fa-users me-2"></i>Approved Teams
             </button>
-          </div>
-        </div>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="leaderboard-tab" data-bs-toggle="tab" data-bs-target="#leaderboard-tab-pane" type="button" role="tab" aria-controls="leaderboard-tab-pane" aria-selected="false">
+              <i class="fa-solid fa-trophy me-2"></i>Live Leaderboard
+            </button>
+          </li>
+        </ul>
 
-        <!-- Search & Filter Controls -->
-        <div class="card glass-card p-3 border-glow mb-4">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <div class="input-group custom-input-group">
-                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
-                <input type="text" id="search-teams" class="form-control" placeholder="Search Team ID, Name, College...">
+        <div class="tab-content" id="evalTabsContent">
+          <!-- TABS 1: APPROVED TEAMS -->
+          <div class="tab-pane fade show active" id="teams-tab-pane" role="tabpanel" aria-labelledby="teams-tab" tabindex="0">
+            <!-- Search & Filters -->
+            <div class="card glass-card p-3 border-glow mb-4">
+              <div class="row g-3">
+                <div class="col-md-5">
+                  <div class="input-group custom-input-group">
+                    <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" id="search-teams" class="form-control" placeholder="Search Team ID, Name, College...">
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <select id="filter-status" class="form-select bg-dark border-secondary text-white py-2.5">
+                    <option value="all">All Evaluated Status</option>
+                    <option value="pending">Pending My Evaluation</option>
+                    <option value="complete">Completed My Evaluation</option>
+                  </select>
+                </div>
+                <div class="col-md-3 text-md-end text-center d-flex align-items-center justify-content-md-end justify-content-center">
+                  <span id="teams-count" class="text-glow font-outfit text-white">0 Teams Found</span>
+                </div>
               </div>
             </div>
-            <div class="col-md-3">
-              <select id="filter-status" class="form-select bg-dark border-secondary text-white py-2.5">
-                <option value="all">All Evaluated Status</option>
-                <option value="pending">Pending My Evaluation</option>
-                <option value="complete">Completed My Evaluation</option>
-              </select>
-            </div>
-            <div class="col-md-3 text-md-end text-center d-flex align-items-center justify-content-md-end justify-content-center">
-              <span id="teams-count" class="text-glow font-outfit text-white">0 Teams Found</span>
+
+            <!-- Table of Teams -->
+            <div class="table-responsive custom-table">
+              <table class="table mb-0 align-middle">
+                <thead>
+                  <tr>
+                    <th>Team ID</th>
+                    <th>Team Name</th>
+                    <th>Leader Name</th>
+                    <th>Round 1 (100)</th>
+                    <th>Round 2 (100)</th>
+                    <th>Grand Finale (100)</th>
+                    <th>Total (300)</th>
+                    <th class="text-center">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="teams-tbody">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-5">
+                      <div class="spinner-border text-cyan mb-2" role="status"></div>
+                      <div>Loading teams database...</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
 
-        <!-- Desktop Table View -->
-        <div class="table-responsive custom-table d-none d-md-block">
-          <table class="table mb-0 align-middle">
-            <thead>
-              <tr>
-                <th>Team ID</th>
-                <th>Team Name</th>
-                <th>Leader Name</th>
-                <th>Round 1 (100)</th>
-                <th>Round 2 (100)</th>
-                <th>Grand Finale (100)</th>
-                <th>Total (300)</th>
-                <th class="text-center">Action</th>
-              </tr>
-            </thead>
-            <tbody id="teams-tbody">
-              <tr>
-                <td colspan="8" class="text-center text-muted py-5">
-                  <div class="spinner-border text-cyan mb-2" role="status"></div>
-                  <div>Loading teams database...</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Card List View -->
-        <div id="teams-mobile-container" class="d-block d-md-none">
-          <div class="text-center text-muted py-5">
-            <div class="spinner-border text-cyan mb-2" role="status"></div>
-            <div>Loading teams database...</div>
-          </div>
-        </div>
-      </section>
-
-      <!-- VIEW 3: LIVE LEADERBOARD -->
-      <section id="view-leaderboard" class="content-view d-none">
-        <div class="card glass-card p-3.5 border-glow mb-4">
-          <div class="row g-3 align-items-center">
-            <div class="col-md-6">
-              <h3 class="font-outfit text-white mb-0"><i class="fa-solid fa-trophy text-warning me-2"></i>Live Leaderboard Rankings</h3>
-            </div>
-            <div class="col-md-6 text-md-end">
-              <div class="btn-group w-100 w-md-auto" role="group" aria-label="Sort Leaderboard By">
-                <button type="button" class="btn btn-outline-cyan font-outfit active px-3 py-2 small" data-sort="overall">Overall Score</button>
-                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day1">Round 1</button>
-                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day2">Round 2</button>
-                <button type="button" class="btn btn-outline-cyan font-outfit px-3 py-2 small" data-sort="day3">Grand Finale</button>
+          <!-- TABS 2: LIVE LEADERBOARD -->
+          <div class="tab-pane fade" id="leaderboard-tab-pane" role="tabpanel" aria-labelledby="leaderboard-tab" tabindex="0">
+            <!-- Leaderboard Options -->
+            <div class="card glass-card p-3 border-glow mb-4">
+              <div class="row g-3 align-items-center">
+                <div class="col-md-6">
+                  <h4 class="font-outfit text-white mb-0"><i class="fa-solid fa-medal text-warning me-2"></i>Rankings Overview</h4>
+                </div>
+                <div class="col-md-6 text-md-end">
+                  <div class="btn-group" role="group" aria-label="Sort Leaderboard By">
+                    <button type="button" class="btn btn-outline-cyan font-outfit active" data-sort="overall">Overall Score</button>
+                    <button type="button" class="btn btn-outline-cyan font-outfit" data-sort="day1">Round 1</button>
+                    <button type="button" class="btn btn-outline-cyan font-outfit" data-sort="day2">Round 2</button>
+                    <button type="button" class="btn btn-outline-cyan font-outfit" data-sort="day3">Grand Finale</button>
+                  </div>
+                </div>
               </div>
             </div>
+
+            <!-- Leaderboard Table -->
+            <div class="table-responsive custom-table">
+              <table class="table mb-0 align-middle text-center">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Team ID</th>
+                    <th>Team Name</th>
+                    <th>College</th>
+                    <th>Round 1</th>
+                    <th>Round 2</th>
+                    <th>Grand Finale</th>
+                    <th>Overall Total</th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboard-tbody">
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-5">
+                      <div class="spinner-border text-cyan mb-2" role="status"></div>
+                      <div>Loading leaderboard...</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Desktop Leaderboard Table -->
-        <div class="table-responsive custom-table d-none d-md-block">
-          <table class="table mb-0 align-middle text-center">
-            <thead>
-              <tr>
-                <th>Rank</th>
-                <th>Team ID</th>
-                <th>Team Name</th>
-                <th>College</th>
-                <th>Round 1</th>
-                <th>Round 2</th>
-                <th>Grand Finale</th>
-                <th>Overall Total</th>
-              </tr>
-            </thead>
-            <tbody id="leaderboard-tbody">
-              <tr>
-                <td colspan="8" class="text-center text-muted py-5">
-                  <div class="spinner-border text-cyan mb-2" role="status"></div>
-                  <div>Loading leaderboard...</div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Mobile Leaderboard Card List -->
-        <div id="leaderboard-mobile-container" class="d-block d-md-none">
-          <div class="text-center text-muted py-5">
-            <div class="spinner-border text-cyan mb-2" role="status"></div>
-            <div>Loading leaderboard...</div>
-          </div>
-        </div>
-      </section>
-
-    </main>
   </div>
 
-  <!-- SCORING SHEET DIALOG MODAL (MOBILE RESPONSE SHEET / DESKTOP DIALOG) -->
+  <!-- 3. SCORING SHEET DIALOG MODAL -->
   <dialog id="evaluationModal" aria-labelledby="modalTitle">
-    <div class="sheet-drag-handle"></div>
     <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom border-secondary">
       <div>
         <h4 id="modalTitle" class="font-outfit text-white mb-1">Evaluate Team</h4>
@@ -914,7 +562,7 @@
     <form id="evaluation-form">
       <input type="hidden" id="eval-team-id">
       
-      <!-- Day Selector duration display -->
+      <!-- Day Selector display -->
       <div class="alert alert-dark border-secondary d-flex justify-content-between align-items-center mb-3 py-2">
         <span class="font-outfit small" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Presentation + 5 min Q&A)</span>
         <span class="badge bg-cyan text-dark font-outfit px-3 py-1.5 fw-bold" id="eval-day-title">Round 1</span>
@@ -922,7 +570,6 @@
 
       <!-- CRITERIA SECTION -->
       <div id="criteria-container" style="max-height: 380px; overflow-y: auto; padding-right: 5px;">
-        
         <!-- Round 1: Ideation (15 August 2026) -->
         <div id="criteria-day1-group" class="day-group">
           <div class="criteria-card">
@@ -930,13 +577,9 @@
               <span class="criteria-title">Problem Identification & Need Analysis</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Problem clarity, target rural community need, and depth of analysis.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="problemClarity" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Problem clarity, target rural community need, and depth of analysis.</small>
+              <input type="number" name="problemClarity" min="0" max="20" required class="form-control score-input day1-score" value="0">
             </div>
           </div>
 
@@ -945,13 +588,9 @@
               <span class="criteria-title">Literature Survey & Existing Solution Analysis</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Originality, innovation gap, survey of existing tech solutions.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="innovation" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Originality, innovation gap, survey of existing tech solutions.</small>
+              <input type="number" name="innovation" min="0" max="20" required class="form-control score-input day1-score" value="0">
             </div>
           </div>
 
@@ -960,13 +599,9 @@
               <span class="criteria-title">Brainstorming, Concept & Architecture</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Technical feasibility, proposed system architecture, and solution concept.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="feasibility" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Technical feasibility, proposed system architecture, and solution concept.</small>
+              <input type="number" name="feasibility" min="0" max="20" required class="form-control score-input day1-score" value="0">
             </div>
           </div>
 
@@ -975,13 +610,9 @@
               <span class="criteria-title">Feasibility Analysis & Concept Refinement</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Preliminary wireframes/UX layout, module breakdown, feasibility refinement.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="designLayout" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Preliminary wireframes/UX layout, module breakdown, feasibility refinement.</small>
+              <input type="number" name="designLayout" min="0" max="20" required class="form-control score-input day1-score" value="0">
             </div>
           </div>
 
@@ -990,13 +621,9 @@
               <span class="criteria-title">Idea Pitch & Q&A Response</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Pitch communication, slide presentation quality, and Q&A defense (15 min pitch).</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="presentation" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Pitch communication, slide presentation quality, and Q&A defense (15 min pitch).</small>
+              <input type="number" name="presentation" min="0" max="20" required class="form-control score-input day1-score" value="0">
             </div>
           </div>
         </div>
@@ -1008,13 +635,9 @@
               <span class="criteria-title">Product Design & System Architecture</span>
               <span class="criteria-max-marks">Max 30 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Code quality, core technical execution, clean architecture, design implementation.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="technicalExecution" min="0" max="30" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Code quality, core technical execution, clean architecture, design implementation.</small>
+              <input type="number" name="technicalExecution" min="0" max="30" required class="form-control score-input day2-score" value="0">
             </div>
           </div>
 
@@ -1023,13 +646,9 @@
               <span class="criteria-title">Prototype Development & Fabrication</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">UI/UX experience, hardware/software prototype completeness over 40 hrs.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="uiux" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">UI/UX experience, hardware/software prototype completeness over 40 hrs.</small>
+              <input type="number" name="uiux" min="0" max="20" required class="form-control score-input day2-score" value="0">
             </div>
           </div>
 
@@ -1038,13 +657,9 @@
               <span class="criteria-title">Integration of Modules & Testing</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Working execution, progress effort, module integration, error handling.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="progressEffort" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Working execution, progress effort, module integration, error handling.</small>
+              <input type="number" name="progressEffort" min="0" max="20" required class="form-control score-input day2-score" value="0">
             </div>
           </div>
 
@@ -1053,13 +668,9 @@
               <span class="criteria-title">Testing, Debugging & Optimization</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">API/Database connections, performance optimization, debugging quality.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="integration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">API/Database connections, performance optimization, debugging quality.</small>
+              <input type="number" name="integration" min="0" max="15" required class="form-control score-input day2-score" value="0">
             </div>
           </div>
 
@@ -1068,13 +679,9 @@
               <span class="criteria-title">Prototype Documentation & Teamwork</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Team coordination, task distribution, documentation quality.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="collaboration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Team coordination, task distribution, documentation quality.</small>
+              <input type="number" name="collaboration" min="0" max="15" required class="form-control score-input day2-score" value="0">
             </div>
           </div>
         </div>
@@ -1086,13 +693,9 @@
               <span class="criteria-title">Product Demonstration & Completeness</span>
               <span class="criteria-max-marks">Max 30 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Working end-to-end demo (15 min live demonstration), feature completeness.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="functionalityDemo" min="0" max="30" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Working end-to-end demo (15 min live demonstration), feature completeness.</small>
+              <input type="number" name="functionalityDemo" min="0" max="30" required class="form-control score-input day3-score" value="0">
             </div>
           </div>
 
@@ -1101,13 +704,9 @@
               <span class="criteria-title">Product Validation & Robustness</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Validation against test cases, stability, handles edge cases under jury testing.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="testingRobustness" min="0" max="20" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Validation against test cases, stability, handles edge cases under jury testing.</small>
+              <input type="number" name="testingRobustness" min="0" max="20" required class="form-control score-input day3-score" value="0">
             </div>
           </div>
 
@@ -1116,13 +715,9 @@
               <span class="criteria-title">Deployment & Public Hosting</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Successfully deployed online, live link, accessibility.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="deployment" min="0" max="15" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Successfully deployed online, live link, accessibility.</small>
+              <input type="number" name="deployment" min="0" max="15" required class="form-control score-input day3-score" value="0">
             </div>
           </div>
 
@@ -1131,13 +726,9 @@
               <span class="criteria-title">Business Viability & Rural Impact</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Scalability for rural communities, marketability, sustainability.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="viability" min="0" max="15" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">Scalability for rural communities, marketability, sustainability.</small>
+              <input type="number" name="viability" min="0" max="15" required class="form-control score-input day3-score" value="0">
             </div>
           </div>
 
@@ -1146,37 +737,31 @@
               <span class="criteria-title">Jury Interaction & Defense</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">10 min Jury Q&A interaction, technical defense, reflection report.</small>
-              <div class="d-flex align-items-center gap-1.5 ms-auto">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="presentationPitch" min="0" max="20" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-outline-secondary btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
+            <div class="d-flex align-items-center justify-content-between">
+              <small class="text-muted">10 min Jury Q&A interaction, technical defense, reflection report.</small>
+              <input type="number" name="presentationPitch" min="0" max="20" required class="form-control score-input day3-score" value="0">
             </div>
           </div>
         </div>
-
       </div>
 
-      <!-- Sticky Modal Footer -->
-      <div class="modal-footer-sticky">
-        <div class="mb-2">
-          <label for="eval-feedback" class="form-label text-muted small mb-1">Evaluator Feedback / Jury Notes</label>
-          <textarea id="eval-feedback" class="form-control bg-dark border-secondary text-white" rows="2" placeholder="Enter constructive feedback for the team..."></textarea>
-        </div>
+      <!-- Feedback Area -->
+      <div class="mb-3 mt-3">
+        <label for="eval-feedback" class="form-label text-muted small mb-1">Evaluator Feedback / Jury Notes</label>
+        <textarea id="eval-feedback" class="form-control bg-dark border-secondary text-white" rows="2" placeholder="Enter constructive feedback for the team..."></textarea>
+      </div>
 
-        <div class="d-flex justify-content-between align-items-center pt-2">
-          <div>
-            <span class="text-muted small d-block">Round Total:</span>
-            <span id="live-total-display" class="fw-bold text-info" style="font-size: 1.05rem;">0 / 100 Marks</span>
-          </div>
-          <div class="d-flex gap-2">
-            <button type="button" class="btn btn-outline-secondary font-outfit px-3" id="modal-cancel-btn">Cancel</button>
-            <button type="submit" id="btn-save-eval" class="btn btn-primary-clean font-outfit fw-bold px-4">
-              <i class="fa-solid fa-save me-1"></i> Save Marks
-            </button>
-          </div>
+      <!-- Live Calculation & Save -->
+      <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+        <div>
+          <span class="text-muted small d-block">Round Total:</span>
+          <span id="live-total-display" class="total-badge">0 / 100 Marks</span>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary font-outfit" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" id="btn-save-eval" class="btn btn-gradient-eval font-outfit fw-bold px-4">
+            <i class="fa-solid fa-save me-1"></i> Save Marks
+          </button>
         </div>
       </div>
     </form>
@@ -1185,7 +770,7 @@
   <!-- Notification Toast Container -->
   <div class="toast-container-custom" id="toast-container"></div>
 
-  <!-- BootStrap & Application Logic JS -->
+  <!-- BootStrap & Custom JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="/evaluation/evaluation.js"></script>
 
