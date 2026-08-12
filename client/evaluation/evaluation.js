@@ -7,12 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const userDisplay = document.getElementById('user-display');
   const loadingScreen = document.getElementById('loading-screen');
   const teamsTbody = document.getElementById('teams-tbody');
+  const teamsMobileContainer = document.getElementById('teams-mobile-container');
   const searchTeams = document.getElementById('search-teams');
   const filterStatus = document.getElementById('filter-status');
   const teamsCount = document.getElementById('teams-count');
   const refreshBtn = document.getElementById('btn-refresh');
   
   const leaderboardTbody = document.getElementById('leaderboard-tbody');
+  const leaderboardMobileContainer = document.getElementById('leaderboard-mobile-container');
   const leaderboardBtns = document.querySelectorAll('[data-sort]');
   
   const evaluationModal = document.getElementById('evaluationModal');
@@ -215,24 +217,24 @@ document.addEventListener('DOMContentLoaded', () => {
     teamsCount.textContent = `${filtered.length} Team${filtered.length === 1 ? '' : 's'} Found`;
 
     if (filtered.length === 0) {
-      teamsTbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center text-muted py-5">
-            <i class="fa-solid fa-folder-open fa-2x mb-2 text-glow"></i>
-            <div>No matching teams found.</div>
-          </td>
-        </tr>
+      const emptyHtml = `
+        <div class="text-center text-muted py-5">
+          <i class="fa-solid fa-folder-open fa-2x mb-2 text-glow"></i>
+          <div>No matching teams found.</div>
+        </div>
       `;
+      teamsTbody.innerHTML = `<tr><td colspan="8">${emptyHtml}</td></tr>`;
+      if (teamsMobileContainer) teamsMobileContainer.innerHTML = emptyHtml;
       return;
     }
 
+    // Desktop Table Render
     teamsTbody.innerHTML = filtered.map(team => {
       const d1Total = team.evaluation?.day1?.total || 0;
       const d2Total = team.evaluation?.day2?.total || 0;
       const d3Total = team.evaluation?.day3?.total || 0;
       const overall = team.evaluation?.overallTotal || 0;
 
-      // Determine evaluation status indicator
       let statusHtml = '';
       if (activeDayKey) {
         const done = isEvaluationComplete(team, activeDayKey);
@@ -264,21 +266,74 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
       `;
     }).join('');
+
+    // Mobile Card List Render
+    if (teamsMobileContainer) {
+      teamsMobileContainer.innerHTML = filtered.map(team => {
+        const d1Total = team.evaluation?.day1?.total || 0;
+        const d2Total = team.evaluation?.day2?.total || 0;
+        const d3Total = team.evaluation?.day3?.total || 0;
+        const overall = team.evaluation?.overallTotal || 0;
+
+        let statusHtml = '';
+        if (activeDayKey) {
+          const done = isEvaluationComplete(team, activeDayKey);
+          statusHtml = done 
+            ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
+            : `<span class="badge-status pending"><i class="fa-solid fa-circle-notch fa-spin me-1"></i>Pending</span>`;
+        }
+
+        return `
+          <div class="mobile-team-card">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <span class="badge bg-cyan text-dark font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
+                <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${team.teamName}</h5>
+                <small class="text-muted">${team.college}</small>
+              </div>
+              <div>${statusHtml}</div>
+            </div>
+            <div class="row g-1 text-center my-2 py-2 border-top border-bottom border-secondary bg-dark bg-opacity-50 rounded">
+              <div class="col-3">
+                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 1</small>
+                <span class="text-info fw-bold">${d1Total}</span>
+              </div>
+              <div class="col-3">
+                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 2</small>
+                <span class="text-warning fw-bold">${d2Total}</span>
+              </div>
+              <div class="col-3">
+                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 3</small>
+                <span class="text-success fw-bold">${d3Total}</span>
+              </div>
+              <div class="col-3">
+                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Overall</small>
+                <span class="text-purple fw-bold">${overall}</span>
+              </div>
+            </div>
+            <button class="btn btn-gradient-eval w-100 py-2.5 font-outfit fw-bold btn-eval-team mt-1" data-id="${team._id}">
+              <i class="fa-solid fa-pen-to-square me-1.5"></i> Evaluate Team Sheet
+            </button>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   function renderLeaderboard(data) {
     if (!data || data.length === 0) {
-      leaderboardTbody.innerHTML = `
-        <tr>
-          <td colspan="8" class="text-center text-muted py-5">
-            <i class="fa-solid fa-trophy fa-2x mb-2 text-glow"></i>
-            <div>No leaderboard data available yet.</div>
-          </td>
-        </tr>
+      const emptyLeaderboard = `
+        <div class="text-center text-muted py-5">
+          <i class="fa-solid fa-trophy fa-2x mb-2 text-glow"></i>
+          <div>No leaderboard data available yet.</div>
+        </div>
       `;
+      leaderboardTbody.innerHTML = `<tr><td colspan="8">${emptyLeaderboard}</td></tr>`;
+      if (leaderboardMobileContainer) leaderboardMobileContainer.innerHTML = emptyLeaderboard;
       return;
     }
 
+    // Desktop Leaderboard
     leaderboardTbody.innerHTML = data.map((entry, index) => {
       const rank = index + 1;
       let rankHtml = rank;
@@ -299,6 +354,36 @@ document.addEventListener('DOMContentLoaded', () => {
         </tr>
       `;
     }).join('');
+
+    // Mobile Leaderboard Cards
+    if (leaderboardMobileContainer) {
+      leaderboardMobileContainer.innerHTML = data.map((entry, index) => {
+        const rank = index + 1;
+        let rankLabel = `#${rank}`;
+        if (rank === 1) rankLabel = `<i class="fa-solid fa-crown text-warning me-1"></i> Rank 1`;
+        else if (rank === 2) rankLabel = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
+        else if (rank === 3) rankLabel = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
+
+        return `
+          <div class="mobile-leaderboard-card">
+            <div class="d-flex justify-content-between align-items-center mb-1.5">
+              <span class="font-outfit fw-bold text-warning" style="font-size: 1rem;">${rankLabel}</span>
+              <span class="badge bg-dark text-white border border-secondary px-2.5 py-1">${entry.teamId?.teamId || 'N/A'}</span>
+            </div>
+            <h5 class="fw-bold text-glow-cyan mb-0" style="font-size: 1.05rem;">${entry.teamId?.teamName || 'N/A'}</h5>
+            <small class="text-muted d-block mb-2">${entry.teamId?.college || 'N/A'}</small>
+            <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary">
+              <div class="small">
+                <span class="text-info me-2">R1: ${entry.day1?.total || 0}</span>
+                <span class="text-warning me-2">R2: ${entry.day2?.total || 0}</span>
+                <span class="text-success">R3: ${entry.day3?.total || 0}</span>
+              </div>
+              <span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0} / 300</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   }
 
   // --- Filtering & Sorting Event Listeners ---
@@ -315,12 +400,44 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // --- Event Delegation for Evaluate Button Click ---
+  // --- Event Delegation for Evaluate Button Click (Desktop Table & Mobile Cards) ---
   teamsTbody.addEventListener('click', (e) => {
     const btn = e.target.closest('.btn-eval-team');
     if (!btn) return;
     const mongoId = btn.getAttribute('data-id');
     openEvaluationModal(mongoId);
+  });
+
+  if (teamsMobileContainer) {
+    teamsMobileContainer.addEventListener('click', (e) => {
+      const btn = e.target.closest('.btn-eval-team');
+      if (!btn) return;
+      const mongoId = btn.getAttribute('data-id');
+      openEvaluationModal(mongoId);
+    });
+  }
+
+  // --- Step Score (+ / -) Touch Controls for Mobile & Quick Scoring ---
+  evaluationModal.addEventListener('click', (e) => {
+    const stepBtn = e.target.closest('.btn-step-score');
+    if (!stepBtn) return;
+    
+    const action = stepBtn.getAttribute('data-action');
+    const input = stepBtn.parentElement.querySelector('.score-input');
+    if (!input || input.disabled) return;
+
+    let val = Number(input.value || 0);
+    const min = Number(input.getAttribute('min') || 0);
+    const max = Number(input.getAttribute('max') || 100);
+
+    if (action === 'inc' && val < max) {
+      val += 1;
+    } else if (action === 'dec' && val > min) {
+      val -= 1;
+    }
+
+    input.value = val;
+    calculateLiveTotal();
   });
 
   // --- Modal Evaluation Handling ---
