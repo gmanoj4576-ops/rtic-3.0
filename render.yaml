@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: rtic-3-0
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_USERNAME
+        value: admin
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: EVALUATOR_1_USERNAME
+        value: evaluator1
+      - key: EVALUATOR_1_PASSWORD
+        sync: false
+      - key: EVALUATOR_2_USERNAME
+        value: evaluator2
+      - key: EVALUATOR_2_PASSWORD
+        sync: false
+      - key: EVALUATOR_3_USERNAME
+        value: evaluator3
+      - key: EVALUATOR_3_PASSWORD
+        sync: false
+      - key: EVAL_ADMIN_USERNAME
+        value: eval_admin
+      - key: EVAL_ADMIN_PASSWORD
+        sync: false

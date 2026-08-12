@@ -1,0 +1,13 @@
+{
+  "name": "rtic-3.0",
+  "version": "1.0.0",
+  "description": "Rural Tech Innovation Challenge 3.0 Registration & Evaluation Platform",
+  "main": "server/server.js",
+  "scripts": {
+    "postinstall": "cd server && npm install",
+    "start": "cd server && node server.js"
+  },
+  "keywords": [],
+  "author": "G MANOJ KUMAR",
+  "license": "ISC"
+}
