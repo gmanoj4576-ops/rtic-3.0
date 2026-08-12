@@ -77,11 +77,17 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // API Routes
 app.use('/api/auth', require('./routes/authRoutes'));
 app.use('/api/teams', require('./routes/teamRoutes'));
+app.use('/api/evaluation', require('./routes/evaluationRoutes'));
 
 // Serve client static files if running in combined mode
 app.use(express.static(path.join(__dirname, '../client')));
 
-// Fallback to success page and main index
+// Dedicated route for evaluation portal
+app.get(['/evaluation', '/evaluation/'], (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/evaluation/index.html'));
+});
+
+// Fallback to main index
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../client/index.html'));
 });
