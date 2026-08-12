@@ -875,14 +875,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if (dayKey === 'day1') {
-      evalDayTitle.textContent = 'Round 1: Ideation (15 Aug)';
+      evalDayTitle.innerHTML = '<i class="fa-solid fa-lightbulb me-1.5 text-warning"></i> Round 1: Ideation (15 Aug)';
       evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Pitch + 5 min Q&A)';
     } else if (dayKey === 'day2') {
-      evalDayTitle.textContent = 'Round 2: Prototype (29 Aug)';
+      evalDayTitle.innerHTML = '<i class="fa-solid fa-gears me-1.5 text-cyan"></i> Round 2: Prototype (29 Aug)';
       evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 20 min/team (12 min Demo + 8 min Discussion)';
     } else if (dayKey === 'day3') {
-      evalDayTitle.textContent = 'Grand Finale: Demo (05 Sep)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 25 min/team (15 min Demo + 10 min Jury Interaction)';
+      evalDayTitle.innerHTML = '<i class="fa-solid fa-trophy me-1.5 text-amber" style="color:#ffb703;"></i> Grand Finale: Demo (05 Sep)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 25 min/team (15 min Demo + 10 min Jury Q&A)';
     }
 
     document.getElementById('criteria-day1-group').classList.add('d-none');

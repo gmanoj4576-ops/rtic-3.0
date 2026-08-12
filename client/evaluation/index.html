@@ -366,38 +366,54 @@
     .btn-round-switch {
       flex: 0 0 auto;
       background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.16);
       color: #a3b3c2;
       font-family: var(--font-title);
       font-size: 13px;
-      font-weight: 600;
-      padding: 10px 16px;
-      border-radius: 12px !important;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 14px !important;
       scroll-snap-align: start;
-      transition: all 0.2s ease;
+      transition: all 0.25s ease;
     }
 
     .btn-round-switch:hover {
-      background: rgba(255, 0, 85, 0.12);
-      color: #ffffff;
-      border-color: rgba(255, 0, 85, 0.3);
+      background: rgba(0, 212, 255, 0.15);
+      color: #00d4ff;
+      border-color: rgba(0, 212, 255, 0.4);
     }
 
     .btn-round-switch.active {
-      background: linear-gradient(135deg, rgba(255, 0, 85, 0.4) 0%, rgba(0, 212, 255, 0.3) 100%) !important;
+      background: linear-gradient(135deg, #ff0055 0%, #00d4ff 100%) !important;
       color: #ffffff !important;
-      border-color: #ff0055 !important;
-      box-shadow: 0 4px 15px rgba(255, 0, 85, 0.35) !important;
-      font-weight: 700;
+      border-color: transparent !important;
+      box-shadow: 0 4px 18px rgba(255, 0, 85, 0.45) !important;
+      font-weight: 800;
     }
 
-    /* Duration Box */
+    /* Duration & Round Badge Box */
     .eval-duration-box {
-      background: rgba(0, 212, 255, 0.08);
-      border: 1px solid rgba(0, 212, 255, 0.25);
-      border-radius: 14px;
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.12) 0%, rgba(255, 0, 85, 0.1) 100%);
+      border: 1px solid rgba(0, 212, 255, 0.35);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .round-badge-glow {
+      background: linear-gradient(135deg, #ff0055 0%, #ff6b00 100%) !important;
+      color: #ffffff !important;
+      font-family: var(--font-title);
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 16px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(255, 0, 85, 0.45);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
     }
 
     /* Criteria Cards & Score Controls */
@@ -1022,9 +1038,9 @@
       <input type="hidden" id="eval-team-id">
       
       <!-- Day Selector duration display -->
-      <div class="eval-duration-box d-flex justify-content-between align-items-center mb-3">
-        <span class="font-outfit small text-white" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team</span>
-        <span class="badge bg-cyan text-dark font-outfit px-3 py-1.5 fw-bold" id="eval-day-title">Round 1</span>
+      <div class="eval-duration-box d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+        <span class="font-outfit small text-white fw-bold" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team</span>
+        <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-lightbulb me-1"></i> Round 1: Ideation (15 Aug)</span>
       </div>
 
       <!-- CRITERIA SECTION -->
