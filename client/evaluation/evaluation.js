@@ -80,15 +80,18 @@ document.addEventListener('DOMContentLoaded', () => {
   document.documentElement.setAttribute('data-theme', savedTheme);
   updateThemeIcon(savedTheme);
 
-  themeToggle.addEventListener('click', () => {
-    const currentTheme = document.documentElement.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', newTheme);
-    localStorage.setItem('color-scheme', newTheme);
-    updateThemeIcon(newTheme);
-  });
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('color-scheme', newTheme);
+      updateThemeIcon(newTheme);
+    });
+  }
 
   function updateThemeIcon(theme) {
+    if (!themeToggle) return;
     const icon = themeToggle.querySelector('i');
     if (theme === 'dark') {
       icon.className = 'fa-solid fa-sun me-1.5';
@@ -100,11 +103,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Mobile Drawer Controls ---
   function toggleMobileSidebar(show) {
     if (show) {
-      appSidebar.classList.add('show');
-      sidebarOverlay.classList.add('show');
+      if (appSidebar) appSidebar.classList.add('show');
+      if (sidebarOverlay) sidebarOverlay.classList.add('show');
     } else {
-      appSidebar.classList.remove('show');
-      sidebarOverlay.classList.remove('show');
+      if (appSidebar) appSidebar.classList.remove('show');
+      if (sidebarOverlay) sidebarOverlay.classList.remove('show');
     }
   }
 
@@ -117,8 +120,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (token && role && username) {
       loginSection.classList.add('d-none');
       dashboardSection.classList.remove('d-none');
-      userDisplay.textContent = username;
-      userRoleBadge.textContent = getRoleLabel(role);
+      if (userDisplay) userDisplay.textContent = username;
+      if (userRoleBadge) userRoleBadge.textContent = getRoleLabel(role);
       loadDashboardData();
     } else {
       loginSection.classList.remove('d-none');
@@ -198,10 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function switchView(viewName) {
-    // Hide all views
     contentViews.forEach(v => v.classList.add('d-none'));
 
-    // Highlight nav link
     navItemLinks.forEach(item => {
       const v = item.getAttribute('data-view');
       if (v === viewName || (viewName === 'pending' && v === 'pending') || (viewName === 'complete' && v === 'complete')) {
@@ -217,7 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('view-leaderboard').classList.remove('d-none');
       loadLeaderboard();
     } else {
-      // 'all', 'pending', 'complete'
       document.getElementById('view-teams').classList.remove('d-none');
       if (viewName === 'pending') {
         filterStatus.value = 'pending';
@@ -305,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobComplete) mobComplete.textContent = completeCount;
   }
 
-  // --- HOME VIEW SEARCH & CARDS ---
+  // --- HOME VIEW SEARCH & CARDS (NO TEAMS SHOWN BY DEFAULT) ---
   if (homeSearchInput) {
     homeSearchInput.addEventListener('input', renderHomeTeams);
   }
@@ -314,18 +314,19 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!homeTeamsList) return;
     const query = (homeSearchInput ? homeSearchInput.value : '').toLowerCase().trim();
     const activeDayKey = getActiveDayKey();
+    const isAdmin = (role === 'eval_admin');
 
-    // If search query is empty, DO NOT show team names on home page!
+    // STRICT RULE: If search query is empty, DO NOT show team names on home page!
     if (!query) {
       if (homeResultsTitle) homeResultsTitle.textContent = '';
       homeTeamsList.innerHTML = `
-        <div class="text-center py-5 px-3 card glass-card border-dashed border-secondary">
+        <div class="text-center py-5 px-3 card-clean">
           <div class="mb-3">
-            <i class="fa-solid fa-qrcode fa-3x text-cyan animate-pulse"></i>
+            <i class="fa-solid fa-qrcode fa-3x text-primary"></i>
           </div>
-          <h4 class="font-outfit text-white fw-bold mb-2">Ready to Evaluate</h4>
+          <h4 class="text-white fw-bold mb-2">Ready for Evaluation</h4>
           <p class="text-muted small mb-0" style="max-width: 440px; margin: 0 auto;">
-            Use the <strong>Camera QR Scanner</strong> above or type a <strong>Team ID</strong> (e.g. <code>RTIC0001</code>) / <strong>Leader Name</strong> / <strong>Reg No</strong> in the search box to load team details for evaluation.
+            Use the <strong>Camera QR Scanner</strong> above or enter a <strong>Team ID</strong> (e.g. <code>RTIC0001</code>) / <strong>Leader Name</strong> / <strong>Reg No</strong> in the search box to load a team.
           </p>
         </div>
       `;
@@ -349,8 +350,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (filtered.length === 0) {
       homeTeamsList.innerHTML = `
-        <div class="text-center text-muted py-5 card glass-card">
-          <i class="fa-solid fa-magnifying-glass fa-2x mb-2 text-glow"></i>
+        <div class="text-center text-muted py-5 card-clean">
+          <i class="fa-solid fa-magnifying-glass fa-2x mb-2"></i>
           <div>No matching team found for "${query}".</div>
         </div>
       `;
@@ -368,40 +369,45 @@ document.addEventListener('DOMContentLoaded', () => {
         const done = isEvaluationComplete(team, activeDayKey);
         statusHtml = done 
           ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-          : `<span class="badge-status pending"><i class="fa-solid fa-circle-notch fa-spin me-1"></i>Pending</span>`;
+          : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
       }
+
+      // HIDE NUMERICAL MARKS FROM REGULAR EVALUATORS FOR BLIND EVALUATION PRIVACY
+      const scoreRowHtml = isAdmin ? `
+        <div class="row g-1 text-center my-2 py-2 border-top border-bottom border-secondary bg-dark bg-opacity-50 rounded">
+          <div class="col-3">
+            <small class="text-muted d-block" style="font-size: 10px;">Round 1</small>
+            <span class="text-info fw-bold">${d1Total}</span>
+          </div>
+          <div class="col-3">
+            <small class="text-muted d-block" style="font-size: 10px;">Round 2</small>
+            <span class="text-warning fw-bold">${d2Total}</span>
+          </div>
+          <div class="col-3">
+            <small class="text-muted d-block" style="font-size: 10px;">Round 3</small>
+            <span class="text-success fw-bold">${d3Total}</span>
+          </div>
+          <div class="col-3">
+            <small class="text-muted d-block" style="font-size: 10px;">Overall</small>
+            <span class="text-purple fw-bold">${overall}</span>
+          </div>
+        </div>
+      ` : '';
 
       return `
         <div class="mobile-team-card mb-3">
           <div class="d-flex justify-content-between align-items-start mb-2">
             <div>
-              <span class="badge bg-cyan text-dark font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
-              <h5 class="fw-bold text-white mb-0" style="font-size: 1.1rem;">${team.teamName}</h5>
+              <span class="badge bg-primary text-white font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
+              <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${team.teamName}</h5>
               <small class="text-muted d-block">${team.college}</small>
-              <small class="text-info" style="font-size: 11px;"><i class="fa-solid fa-user me-1"></i>Leader: ${team.leaderName || 'N/A'}</small>
+              <small class="text-info" style="font-size: 12px;"><i class="fa-solid fa-user me-1"></i>Leader: ${team.leaderName || 'N/A'}</small>
             </div>
             <div>${statusHtml}</div>
           </div>
-          <div class="row g-1 text-center my-2 py-2 border-top border-bottom border-secondary bg-dark bg-opacity-50 rounded">
-            <div class="col-3">
-              <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 1</small>
-              <span class="text-info fw-bold">${d1Total}</span>
-            </div>
-            <div class="col-3">
-              <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 2</small>
-              <span class="text-warning fw-bold">${d2Total}</span>
-            </div>
-            <div class="col-3">
-              <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 3</small>
-              <span class="text-success fw-bold">${d3Total}</span>
-            </div>
-            <div class="col-3">
-              <small class="text-muted d-block font-outfit" style="font-size: 10px;">Overall</small>
-              <span class="text-purple fw-bold">${overall}</span>
-            </div>
-          </div>
-          <button class="btn btn-gradient-eval w-100 py-2.5 font-outfit fw-bold btn-eval-team" data-id="${team._id}">
-            <i class="fa-solid fa-pen-to-square me-1.5"></i> Evaluate Team Sheet
+          ${scoreRowHtml}
+          <button class="btn btn-primary-clean w-100 py-2.5 font-outfit fw-bold btn-eval-team mt-2" data-id="${team._id}">
+            <i class="fa-solid fa-pen-to-square me-1.5"></i> Evaluate Team
           </button>
         </div>
       `;
@@ -439,7 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     scannerWrapper.classList.remove('d-none');
     btnToggleScanner.innerHTML = '<i class="fa-solid fa-square-xmark me-1.5"></i> Stop Camera Scanner';
-    btnToggleScanner.classList.replace('btn-gradient-eval', 'btn-outline-danger');
+    btnToggleScanner.classList.replace('btn-primary-clean', 'btn-outline-danger');
 
     if (!html5QrcodeScanner) {
       html5QrcodeScanner = new Html5Qrcode("qr-reader");
@@ -447,7 +453,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     html5QrcodeScanner.start(
       { facingMode: "environment" },
-      { fps: 10, qrbox: { width: 250, height: 250 } },
+      { fps: 10, qrbox: { width: 240, height: 240 } },
       (decodedText) => {
         handleQrScannedText(decodedText);
       },
@@ -467,12 +473,12 @@ document.addEventListener('DOMContentLoaded', () => {
         isScannerRunning = false;
         scannerWrapper.classList.add('d-none');
         btnToggleScanner.innerHTML = '<i class="fa-solid fa-qrcode me-1.5"></i> Start Camera Scan';
-        btnToggleScanner.classList.replace('btn-outline-danger', 'btn-gradient-eval');
+        btnToggleScanner.classList.replace('btn-outline-danger', 'btn-primary-clean');
       }).catch(err => console.error(err));
     } else {
       scannerWrapper.classList.add('d-none');
       btnToggleScanner.innerHTML = '<i class="fa-solid fa-qrcode me-1.5"></i> Start Camera Scan';
-      btnToggleScanner.classList.replace('btn-outline-danger', 'btn-gradient-eval');
+      btnToggleScanner.classList.replace('btn-outline-danger', 'btn-primary-clean');
     }
   }
 
@@ -480,7 +486,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!scannedText) return;
     const clean = scannedText.trim().toLowerCase();
 
-    // Match Team ID, Leader Reg No, Name, or Phone/Email
     const matched = allTeams.find(team => {
       const tId = (team.teamId || '').toLowerCase();
       const tName = (team.teamName || '').toLowerCase();
@@ -510,7 +515,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // --- TEAMS GRID VIEW ---
+  // --- TEAMS LIST VIEW ---
   if (searchTeams) searchTeams.addEventListener('input', renderTeamsTable);
   if (filterStatus) filterStatus.addEventListener('change', renderTeamsTable);
 
@@ -518,6 +523,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchVal = searchTeams ? searchTeams.value.toLowerCase().trim() : '';
     const filterVal = filterStatus ? filterStatus.value : 'all';
     const activeDayKey = getActiveDayKey();
+    const isAdmin = (role === 'eval_admin');
 
     let filtered = allTeams.filter(team => {
       const matchSearch = 
@@ -541,7 +547,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (filtered.length === 0) {
       const emptyHtml = `
         <div class="text-center text-muted py-5">
-          <i class="fa-solid fa-folder-open fa-2x mb-2 text-glow"></i>
+          <i class="fa-solid fa-folder-open fa-2x mb-2"></i>
           <div>No matching teams found.</div>
         </div>
       `;
@@ -562,25 +568,32 @@ document.addEventListener('DOMContentLoaded', () => {
           const done = isEvaluationComplete(team, activeDayKey);
           statusHtml = done 
             ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-            : `<span class="badge-status pending"><i class="fa-solid fa-circle-notch fa-spin me-1"></i>Pending</span>`;
+            : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
         }
+
+        // HIDE MARKS FROM REGULAR EVALUATORS FOR BLIND EVALUATION
+        const scoreCells = isAdmin ? `
+          <td><span class="text-info fw-bold">${d1Total}</span>/100</td>
+          <td><span class="text-warning fw-bold">${d2Total}</span>/100</td>
+          <td><span class="text-success fw-bold">${d3Total}</span>/100</td>
+          <td><strong class="text-purple" style="font-size: 15px;">${overall}</strong>/300</td>
+        ` : `
+          <td colspan="4" class="text-muted small"><i class="fa-solid fa-eye-slash me-1"></i>Hidden (Blind Evaluation)</td>
+        `;
 
         return `
           <tr>
             <td><strong class="font-outfit text-white">${team.teamId}</strong></td>
             <td>
-              <div class="fw-bold text-glow-cyan">${team.teamName}</div>
+              <div class="fw-bold text-white">${team.teamName}</div>
               <small class="text-muted">${team.college}</small>
             </td>
             <td>${team.leaderName || 'N/A'}</td>
-            <td><span class="text-info fw-bold">${d1Total}</span>/100</td>
-            <td><span class="text-warning fw-bold">${d2Total}</span>/100</td>
-            <td><span class="text-success fw-bold">${d3Total}</span>/100</td>
-            <td><strong class="text-purple" style="font-size: 16px;">${overall}</strong>/300</td>
+            ${scoreCells}
             <td class="text-center">
               <div class="d-flex align-items-center justify-content-center gap-2">
                 ${statusHtml}
-                <button class="btn btn-sm btn-gradient-eval px-3 font-outfit btn-eval-team" data-id="${team._id}">
+                <button class="btn btn-sm btn-primary-clean px-3 font-outfit btn-eval-team" data-id="${team._id}">
                   <i class="fa-solid fa-pen-to-square me-1"></i> Evaluate
                 </button>
               </div>
@@ -592,49 +605,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (teamsMobileContainer) {
       teamsMobileContainer.innerHTML = filtered.map(team => {
-        const d1Total = team.evaluation?.day1?.total || 0;
-        const d2Total = team.evaluation?.day2?.total || 0;
-        const d3Total = team.evaluation?.day3?.total || 0;
-        const overall = team.evaluation?.overallTotal || 0;
-
         let statusHtml = '';
         if (activeDayKey) {
           const done = isEvaluationComplete(team, activeDayKey);
           statusHtml = done 
             ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-            : `<span class="badge-status pending"><i class="fa-solid fa-circle-notch fa-spin me-1"></i>Pending</span>`;
+            : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
         }
 
         return `
           <div class="mobile-team-card">
             <div class="d-flex justify-content-between align-items-start mb-2">
               <div>
-                <span class="badge bg-cyan text-dark font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
+                <span class="badge bg-primary text-white font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
                 <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${team.teamName}</h5>
-                <small class="text-muted">${team.college}</small>
+                <small class="text-muted d-block">${team.college}</small>
+                <small class="text-info" style="font-size: 12px;"><i class="fa-solid fa-user me-1"></i>Leader: ${team.leaderName || 'N/A'}</small>
               </div>
               <div>${statusHtml}</div>
             </div>
-            <div class="row g-1 text-center my-2 py-2 border-top border-bottom border-secondary bg-dark bg-opacity-50 rounded">
-              <div class="col-3">
-                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 1</small>
-                <span class="text-info fw-bold">${d1Total}</span>
-              </div>
-              <div class="col-3">
-                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 2</small>
-                <span class="text-warning fw-bold">${d2Total}</span>
-              </div>
-              <div class="col-3">
-                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Round 3</small>
-                <span class="text-success fw-bold">${d3Total}</span>
-              </div>
-              <div class="col-3">
-                <small class="text-muted d-block font-outfit" style="font-size: 10px;">Overall</small>
-                <span class="text-purple fw-bold">${overall}</span>
-              </div>
-            </div>
-            <button class="btn btn-gradient-eval w-100 py-2.5 font-outfit fw-bold btn-eval-team mt-1" data-id="${team._id}">
-              <i class="fa-solid fa-pen-to-square me-1.5"></i> Evaluate Team Sheet
+            <button class="btn btn-primary-clean w-100 py-2.5 font-outfit fw-bold btn-eval-team mt-2" data-id="${team._id}">
+              <i class="fa-solid fa-pen-to-square me-1.5"></i> Evaluate Team
             </button>
           </div>
         `;
@@ -669,10 +660,11 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function renderLeaderboard(data) {
+    const isAdmin = (role === 'eval_admin');
     if (!data || data.length === 0) {
       const emptyLeaderboard = `
         <div class="text-center text-muted py-5">
-          <i class="fa-solid fa-trophy fa-2x mb-2 text-glow"></i>
+          <i class="fa-solid fa-trophy fa-2x mb-2"></i>
           <div>No leaderboard data available yet.</div>
         </div>
       `;
@@ -684,21 +676,27 @@ document.addEventListener('DOMContentLoaded', () => {
     if (leaderboardTbody) {
       leaderboardTbody.innerHTML = data.map((entry, index) => {
         const rank = index + 1;
-        let rankHtml = rank;
-        if (rank === 1) rankHtml = `<i class="fa-solid fa-crown fa-lg text-warning animate-bounce"></i> <span class="fw-bold text-warning">1</span>`;
-        else if (rank === 2) rankHtml = `<i class="fa-solid fa-medal fa-lg text-secondary"></i> <span class="fw-bold text-white">2</span>`;
-        else if (rank === 3) rankHtml = `<i class="fa-solid fa-medal fa-lg text-bronze" style="color: #cd7f32;"></i> <span class="fw-bold" style="color: #cd7f32;">3</span>`;
+        let rankHtml = `#${rank}`;
+        if (rank === 1) rankHtml = `<i class="fa-solid fa-crown text-warning me-1"></i> Rank 1`;
+        else if (rank === 2) rankHtml = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
+        else if (rank === 3) rankHtml = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
+
+        const scoreCells = isAdmin ? `
+          <td class="text-info font-outfit fw-bold">${entry.day1?.total || 0}</td>
+          <td class="text-warning font-outfit fw-bold">${entry.day2?.total || 0}</td>
+          <td class="text-success font-outfit fw-bold">${entry.day3?.total || 0}</td>
+          <td><span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0}</span></td>
+        ` : `
+          <td colspan="4" class="text-muted small"><i class="fa-solid fa-lock me-1"></i>Scores Hidden (Blind Grading)</td>
+        `;
 
         return `
           <tr>
             <td><strong class="font-outfit">${rankHtml}</strong></td>
             <td><span class="badge bg-dark text-white border border-secondary px-2.5 py-1.5">${entry.teamId?.teamId || 'N/A'}</span></td>
-            <td><strong class="text-glow-cyan">${entry.teamId?.teamName || 'N/A'}</strong></td>
+            <td><strong class="text-white">${entry.teamId?.teamName || 'N/A'}</strong></td>
             <td><small class="text-muted">${entry.teamId?.college || 'N/A'}</small></td>
-            <td class="text-info font-outfit fw-bold">${entry.day1?.total || 0}</td>
-            <td class="text-warning font-outfit fw-bold">${entry.day2?.total || 0}</td>
-            <td class="text-success font-outfit fw-bold">${entry.day3?.total || 0}</td>
-            <td><span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 14px;">${entry.overallTotal || 0}</span></td>
+            ${scoreCells}
           </tr>
         `;
       }).join('');
@@ -712,21 +710,22 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (rank === 2) rankLabel = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
         else if (rank === 3) rankLabel = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
 
+        const mobileScoreText = isAdmin ? `
+          <span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0} / 300</span>
+        ` : `
+          <span class="text-muted small"><i class="fa-solid fa-lock me-1"></i>Blind Grading</span>
+        `;
+
         return `
-          <div class="mobile-leaderboard-card">
+          <div class="mobile-team-card">
             <div class="d-flex justify-content-between align-items-center mb-1.5">
               <span class="font-outfit fw-bold text-warning" style="font-size: 1rem;">${rankLabel}</span>
               <span class="badge bg-dark text-white border border-secondary px-2.5 py-1">${entry.teamId?.teamId || 'N/A'}</span>
             </div>
-            <h5 class="fw-bold text-glow-cyan mb-0" style="font-size: 1.05rem;">${entry.teamId?.teamName || 'N/A'}</h5>
+            <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${entry.teamId?.teamName || 'N/A'}</h5>
             <small class="text-muted d-block mb-2">${entry.teamId?.college || 'N/A'}</small>
             <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary">
-              <div class="small">
-                <span class="text-info me-2">R1: ${entry.day1?.total || 0}</span>
-                <span class="text-warning me-2">R2: ${entry.day2?.total || 0}</span>
-                <span class="text-success">R3: ${entry.day3?.total || 0}</span>
-              </div>
-              <span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0} / 300</span>
+              ${mobileScoreText}
             </div>
           </div>
         `;
@@ -783,13 +782,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (dayKey === 'day1') {
       evalDayTitle.textContent = 'Round 1: Ideation (15 Aug)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Presentation + 5 min Q&A)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1"></i>Duration: 15 min/team (10 min Pitch + 5 min Q&A)';
     } else if (dayKey === 'day2') {
       evalDayTitle.textContent = 'Round 2: Prototype (29 Aug)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 20 min/team (12 min Demo + 8 min Discussion)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1"></i>Duration: 20 min/team (12 min Demo + 8 min Discussion)';
     } else if (dayKey === 'day3') {
       evalDayTitle.textContent = 'Grand Finale: Demo (05 Sep)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 25 min/team (15 min Demo + 10 min Jury Interaction)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1"></i>Duration: 25 min/team (15 min Demo + 10 min Jury Interaction)';
     }
 
     document.getElementById('criteria-day1-group').classList.add('d-none');
