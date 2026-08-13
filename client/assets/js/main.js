@@ -65,38 +65,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ----------------------------------------------------
-  // 4. Countdown Timer (Target: Sept 15, 2026)
+  // 4. Registration Extension Status
   // ----------------------------------------------------
-  const daysEl = document.getElementById("days");
-  if (daysEl) {
-    const targetDate = new Date("August 12, 2026 23:59:59").getTime();
-
-    function updateCountdown() {
-      const now = new Date().getTime();
-      const distance = targetDate - now;
-
-      if (distance < 0) {
-        document.getElementById("days").innerText = "00";
-        document.getElementById("hours").innerText = "00";
-        document.getElementById("minutes").innerText = "00";
-        document.getElementById("seconds").innerText = "00";
-        return;
-      }
-
-      const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-      document.getElementById("days").innerText = String(days).padStart(2, "0");
-      document.getElementById("hours").innerText = String(hours).padStart(2, "0");
-      document.getElementById("minutes").innerText = String(minutes).padStart(2, "0");
-      document.getElementById("seconds").innerText = String(seconds).padStart(2, "0");
-    }
-
-    setInterval(updateCountdown, 1000);
-    updateCountdown();
-  }
+  // Countdown timer removed as registrations have been extended.
 
   // ----------------------------------------------------
   // 5. Dark / Light Theme Switching
