@@ -11,22 +11,14 @@ exports.login = async (req, res) => {
       return res.status(400).json({ message: 'Username and password are required' });
     }
 
-    // Load credentials from environment or use default secure fallbacks
+    // Load credentials from environment or use default fallbacks
     const credentials = {
-      [process.env.EVALUATOR_1_USERNAME || 'evaluator1']: {
-        password: process.env.EVALUATOR_1_PASSWORD || 'EvalDay1@2026!Secured',
-        role: 'evaluator1'
-      },
-      [process.env.EVALUATOR_2_USERNAME || 'evaluator2']: {
-        password: process.env.EVALUATOR_2_PASSWORD || 'EvalDay2@2026!Secured',
-        role: 'evaluator2'
-      },
-      [process.env.EVALUATOR_3_USERNAME || 'evaluator3']: {
-        password: process.env.EVALUATOR_3_PASSWORD || 'EvalDay3@2026!Secured',
-        role: 'evaluator3'
+      [process.env.EVALUATOR_USERNAME || 'evaluator']: {
+        password: process.env.EVALUATOR_PASSWORD || 'Evaluator@RTIC2026',
+        role: 'evaluator'
       },
       [process.env.EVAL_ADMIN_USERNAME || 'eval_admin']: {
-        password: process.env.EVAL_ADMIN_PASSWORD || 'EvalAdmin@2026!SuperKey',
+        password: process.env.EVAL_ADMIN_PASSWORD || 'EvalAdmin@RTIC2026',
         role: 'eval_admin'
       }
     };
@@ -77,9 +69,7 @@ exports.getTeams = async (req, res) => {
     // Merge evaluations with team objects
     const result = approvedTeams.map(team => {
       const evaluation = evalMap[team._id.toString()] || {
-        day1: { total: 0, feedback: '', problemClarity: 0, innovation: 0, feasibility: 0, designLayout: 0, presentation: 0 },
-        day2: { total: 0, feedback: '', technicalExecution: 0, uiux: 0, progressEffort: 0, integration: 0, collaboration: 0 },
-        day3: { total: 0, feedback: '', functionalityDemo: 0, testingRobustness: 0, deployment: 0, viability: 0, presentationPitch: 0 },
+        day1: { total: 0, feedback: '', problemClarity: 0, innovation: 0, feasibility: 0, literatureSurvey: 0, presentation: 0 },
         overallTotal: 0
       };
       
@@ -87,6 +77,7 @@ exports.getTeams = async (req, res) => {
         _id: team._id,
         teamId: team.teamId,
         teamName: team.teamName,
+        projectName: team.projectName || team.teamName,
         college: team.college,
         department: team.department,
         leaderName: team.leader?.name,
@@ -104,54 +95,24 @@ exports.getTeams = async (req, res) => {
 // Submit/Update marks
 exports.submitEvaluation = async (req, res) => {
   try {
-    const { teamId, day, scores, feedback } = req.body;
+    const { teamId, day = 'day1', scores, feedback } = req.body;
     const { role, username } = req.evaluator;
 
-    if (!teamId || !day || !scores) {
+    if (!teamId || !scores) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
 
-    if (!['day1', 'day2', 'day3'].includes(day)) {
-      return res.status(400).json({ message: 'Invalid day parameter' });
-    }
+    const evaluationDay = day || 'day1';
 
-    // Role-based editing restrictions
-    if (role === 'evaluator1' && day !== 'day1') {
-      return res.status(403).json({ message: 'Permission denied: Day 1 evaluator can only enter Day 1 marks' });
-    }
-    if (role === 'evaluator2' && day !== 'day2') {
-      return res.status(403).json({ message: 'Permission denied: Day 2 evaluator can only enter Day 2 marks' });
-    }
-    if (role === 'evaluator3' && day !== 'day3') {
-      return res.status(403).json({ message: 'Permission denied: Day 3 evaluator can only enter Day 3 marks' });
-    }
-
-    // Define validation configurations
-    const validations = {
-      day1: {
-        problemClarity: 20,
-        innovation: 20,
-        feasibility: 20,
-        designLayout: 20,
-        presentation: 20
-      },
-      day2: {
-        technicalExecution: 30,
-        uiux: 20,
-        progressEffort: 20,
-        integration: 15,
-        collaboration: 15
-      },
-      day3: {
-        functionalityDemo: 30,
-        testingRobustness: 20,
-        deployment: 15,
-        viability: 15,
-        presentationPitch: 20
-      }
+    // Define validation criteria (out of 100 marks total)
+    const criteria = {
+      problemClarity: 20,
+      literatureSurvey: 20,
+      innovation: 20,
+      feasibility: 20,
+      presentation: 20
     };
 
-    const criteria = validations[day];
     const updatedScores = {};
 
     // Validate marks limits
@@ -180,7 +141,7 @@ exports.submitEvaluation = async (req, res) => {
     }
 
     // Set marks, feedback, evaluator, and timestamp
-    evaluation[day] = {
+    evaluation[evaluationDay] = {
       ...updatedScores,
       feedback: feedback || '',
       evaluatedBy: username,
@@ -202,16 +163,9 @@ exports.submitEvaluation = async (req, res) => {
 // Retrieve Leaderboard sorted by total marks
 exports.getLeaderboard = async (req, res) => {
   try {
-    const { sortBy } = req.query; // 'overall', 'day1', 'day2', 'day3'
-    
-    let sortField = 'overallTotal';
-    if (sortBy === 'day1') sortField = 'day1.total';
-    else if (sortBy === 'day2') sortField = 'day2.total';
-    else if (sortBy === 'day3') sortField = 'day3.total';
-
     const leaderboard = await Evaluation.find({})
-      .populate('teamId', 'teamId teamName college department status')
-      .sort({ [sortField]: -1 });
+      .populate('teamId', 'teamId teamName projectName college department status')
+      .sort({ overallTotal: -1, 'day1.total': -1 });
 
     // Filter out evaluations where team status is not approved, just in case
     const filteredLeaderboard = leaderboard.filter(ev => ev.teamId && ev.teamId.status === 'approved');

@@ -10,6 +10,7 @@ const memberSchema = new mongoose.Schema({
 const teamSchema = new mongoose.Schema({
   teamId: { type: String, required: true, unique: true },
   teamName: { type: String, required: true, unique: true, trim: true },
+  projectName: { type: String, trim: true },
   college: { type: String, required: true, trim: true },
   department: { type: String, required: true, trim: true },
   

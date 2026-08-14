@@ -878,13 +878,7 @@
             <h3 class="font-outfit fw-bold text-white mb-1">
               <i class="fa-solid fa-trophy text-amber me-2" style="color: #ffb703;"></i>Live Leaderboard
             </h3>
-            <p class="text-muted small mb-0">Rankings based on overall evaluation scores</p>
-          </div>
-          <div class="btn-group font-outfit" role="group" aria-label="Sort options">
-            <button type="button" class="btn btn-outline-secondary btn-sm active" data-sort="overall">Overall</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-sort="day1">Round 1</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-sort="day2">Round 2</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" data-sort="day3">Round 3</button>
+            <p class="text-muted small mb-0">Rankings based on overall project evaluation scores</p>
           </div>
         </div>
 
@@ -896,16 +890,14 @@
                 <th>Rank</th>
                 <th>Team ID</th>
                 <th>Team Name</th>
+                <th>Project Name</th>
                 <th>College</th>
-                <th>Round 1</th>
-                <th>Round 2</th>
-                <th>Grand Finale</th>
-                <th>Overall</th>
+                <th>Total Score (out of 100)</th>
               </tr>
             </thead>
             <tbody id="leaderboard-tbody">
               <tr>
-                <td colspan="8" class="text-center text-muted py-5">
+                <td colspan="6" class="text-center text-muted py-5">
                   <div class="spinner-border text-cyan mb-2" role="status"></div>
                   <div>Loading leaderboard...</div>
                 </td>
@@ -943,7 +935,7 @@
             <div class="col-md-7">
               <div class="input-group custom-input-group">
                 <span class="input-group-text"><i class="fa-solid fa-search"></i></span>
-                <input type="text" id="search-teams" class="form-control" placeholder="Search by ID, name, or leader...">
+                <input type="text" id="search-teams" class="form-control" placeholder="Search by ID, team name, project name, or leader...">
               </div>
             </div>
             <div class="col-md-5">
@@ -964,18 +956,17 @@
             <thead>
               <tr>
                 <th>Team ID</th>
-                <th>Team Name & College</th>
+                <th>Team Name</th>
+                <th>Project Name</th>
+                <th>College</th>
                 <th>Leader Name</th>
-                <th>Round 1</th>
-                <th>Round 2</th>
-                <th>Grand Finale</th>
-                <th>Overall</th>
+                <th>Score</th>
                 <th class="text-center">Action</th>
               </tr>
             </thead>
             <tbody id="teams-tbody">
               <tr>
-                <td colspan="8" class="text-center text-muted py-5">Loading teams data...</td>
+                <td colspan="7" class="text-center text-muted py-5">Loading teams data...</td>
               </tr>
             </tbody>
           </table>
@@ -1021,32 +1012,19 @@
       <button type="button" class="btn-close btn-close-white" aria-label="Close modal" id="modal-close-btn"></button>
     </div>
 
-    <!-- Round Selection Switcher -->
-    <div class="btn-group w-100 mb-3 round-switcher" role="group" aria-label="Select Round">
-      <button type="button" class="btn btn-outline-secondary font-outfit btn-round-switch active" data-round="day1">
-        Round 1: Ideation (15 Aug)
-      </button>
-      <button type="button" class="btn btn-outline-secondary font-outfit btn-round-switch" data-round="day2">
-        Round 2: Prototype (29 Aug)
-      </button>
-      <button type="button" class="btn btn-outline-secondary font-outfit btn-round-switch" data-round="day3">
-        Round 3: Grand Finale (05 Sep)
-      </button>
-    </div>
-
     <form id="evaluation-form">
       <input type="hidden" id="eval-team-id">
       
-      <!-- Day Selector duration display -->
+      <!-- Duration display -->
       <div class="eval-duration-box d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <span class="font-outfit small text-white fw-bold" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team</span>
-        <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-lightbulb me-1"></i> Round 1: Ideation (15 Aug)</span>
+        <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-clipboard-check me-1"></i> Project Evaluation (100 Marks)</span>
       </div>
 
       <!-- CRITERIA SECTION -->
       <div id="criteria-container">
         
-        <!-- Round 1: Ideation -->
+        <!-- Single Evaluation Round -->
         <div id="criteria-day1-group" class="day-group">
           <div class="criteria-card">
             <div class="criteria-header">
@@ -1118,162 +1096,6 @@
               <div class="score-stepper-group ms-auto">
                 <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
                 <input type="number" name="presentation" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Round 2: Prototype -->
-        <div id="criteria-day2-group" class="day-group d-none">
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Product Design & System Architecture</span>
-              <span class="criteria-max-marks">Max 30 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Code quality, core technical execution, clean architecture.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="technicalExecution" min="0" max="30" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Prototype Development & Fabrication</span>
-              <span class="criteria-max-marks">Max 20 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">UI/UX experience, hardware/software prototype completeness.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="uiux" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Integration of Modules & Testing</span>
-              <span class="criteria-max-marks">Max 20 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Working execution, progress effort, module integration.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="progressEffort" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Testing, Debugging & Optimization</span>
-              <span class="criteria-max-marks">Max 15 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">API/Database connections, performance optimization.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="integration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Prototype Documentation & Teamwork</span>
-              <span class="criteria-max-marks">Max 15 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Team coordination, task distribution, documentation quality.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="collaboration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Round 3: Grand Finale -->
-        <div id="criteria-day3-group" class="day-group d-none">
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Product Demonstration & Completeness</span>
-              <span class="criteria-max-marks">Max 30 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Working end-to-end demo (15 min live demonstration).</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="functionalityDemo" min="0" max="30" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Product Validation & Robustness</span>
-              <span class="criteria-max-marks">Max 20 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Validation against test cases, stability under jury testing.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="testingRobustness" min="0" max="20" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Deployment & Public Hosting</span>
-              <span class="criteria-max-marks">Max 15 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Successfully deployed online, live link, accessibility.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="deployment" min="0" max="15" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Business Viability & Rural Impact</span>
-              <span class="criteria-max-marks">Max 15 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">Scalability for rural communities, marketability.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="viability" min="0" max="15" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Jury Interaction & Defense</span>
-              <span class="criteria-max-marks">Max 20 Marks</span>
-            </div>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-              <small class="text-muted text-break" style="max-width: 58%;">10 min Jury Q&A interaction, technical defense.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec"><i class="fa-solid fa-minus"></i></button>
-                <input type="number" name="presentationPitch" min="0" max="20" required class="form-control score-input day3-score" value="0" inputmode="numeric" pattern="[0-9]*">
                 <button type="button" class="btn btn-step-score" data-action="inc"><i class="fa-solid fa-plus"></i></button>
               </div>
             </div>

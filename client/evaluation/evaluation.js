@@ -135,9 +135,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function getRoleLabel(roleName) {
     switch (roleName) {
-      case 'evaluator1': return 'Round 1 Evaluator';
-      case 'evaluator2': return 'Round 2 Evaluator';
-      case 'evaluator3': return 'Round 3 Evaluator';
       case 'eval_admin': return 'Super Admin Evaluator';
       default: return 'Evaluator';
     }
@@ -267,7 +264,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   async function loadLeaderboard() {
     try {
-      const res = await fetch(`/api/evaluation/leaderboard?sortBy=${currentSort}`, {
+      const res = await fetch(`/api/evaluation/leaderboard`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       if (!res.ok) throw new Error('Failed to fetch leaderboard data');
@@ -279,25 +276,20 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getActiveDayKey() {
-    if (role === 'evaluator1') return 'day1';
-    if (role === 'evaluator2') return 'day2';
-    if (role === 'evaluator3') return 'day3';
-    return null;
+    return 'day1';
   }
 
-  function isEvaluationComplete(team, dayKey) {
-    if (!dayKey) return false;
-    const scores = team.evaluation?.[dayKey];
-    return !!(scores && scores.evaluatedBy);
+  function isEvaluationComplete(team, dayKey = 'day1') {
+    const scores = team.evaluation?.[dayKey] || team.evaluation;
+    return !!(scores && (scores.evaluatedBy || scores.total > 0));
   }
 
   function updateSidebarBadges() {
-    const activeDayKey = getActiveDayKey();
     let pendingCount = 0;
     let completeCount = 0;
 
     allTeams.forEach(team => {
-      if (isEvaluationComplete(team, activeDayKey)) completeCount++;
+      if (isEvaluationComplete(team, 'day1')) completeCount++;
       else pendingCount++;
     });
 
@@ -313,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (mobComplete) mobComplete.textContent = completeCount;
   }
 
-  // --- HOME VIEW (STRICT RULE: NO TEAMS RENDERED UNTIL SEARCHED OR SCANNED) ---
+  // --- HOME VIEW ---
   if (homeSearchInput) {
     homeSearchInput.addEventListener('input', renderHomeTeams);
   }
@@ -321,9 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderHomeTeams() {
     if (!homeTeamsList) return;
     const query = (homeSearchInput ? homeSearchInput.value : '').toLowerCase().trim();
-    const activeDayKey = getActiveDayKey();
 
-    // STRICT RULE: If search query is empty, DO NOT show team names on home page!
     if (!query) {
       if (homeResultsTitle) homeResultsTitle.textContent = '';
       homeTeamsList.innerHTML = `
@@ -333,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <h4 class="font-outfit text-white fw-bold mb-2">Ready to Evaluate</h4>
           <p class="text-muted small mb-0" style="max-width: 440px; margin: 0 auto;">
-            Use the <strong>Camera QR Scanner</strong> above or type a <strong>Team ID</strong> (e.g. <code>RTIC0001</code>) / <strong>Leader Name</strong> / <strong>Reg No</strong> in the search box to load team details for evaluation.
+            Use the <strong>Camera QR Scanner</strong> above or type a <strong>Team ID</strong> (e.g. <code>RTIC0001</code>) / <strong>Project Name</strong> / <strong>Leader Name</strong> in the search box to load team details.
           </p>
         </div>
       `;
@@ -341,9 +331,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     let filtered = allTeams.filter(team => {
+      const pName = (team.projectName || '').toLowerCase();
       return (
         team.teamId.toLowerCase().includes(query) ||
         team.teamName.toLowerCase().includes(query) ||
+        pName.includes(query) ||
         team.college.toLowerCase().includes(query) ||
         (team.leaderName && team.leaderName.toLowerCase().includes(query)) ||
         (team.leaderPhone && team.leaderPhone.toLowerCase().includes(query)) ||
@@ -366,13 +358,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     homeTeamsList.innerHTML = filtered.map(team => {
-      let statusHtml = '';
-      if (activeDayKey) {
-        const done = isEvaluationComplete(team, activeDayKey);
-        statusHtml = done 
-          ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-          : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
-      }
+      const done = isEvaluationComplete(team, 'day1');
+      const statusHtml = done 
+        ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
+        : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
 
       return `
         <div class="mobile-team-card mb-3">
@@ -380,6 +369,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div>
               <span class="badge bg-cyan text-dark font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
               <h5 class="fw-bold text-white mb-0" style="font-size: 1.1rem;">${team.teamName}</h5>
+              <small class="text-cyan d-block fw-semibold mb-1" style="font-size: 13px;"><i class="fa-solid fa-lightbulb me-1"></i>Project: ${team.projectName || team.teamName}</small>
               <small class="text-muted d-block">${team.college}</small>
               <small class="text-info" style="font-size: 12px;"><i class="fa-solid fa-user me-1"></i>Leader: ${team.leaderName || 'N/A'}</small>
             </div>
@@ -468,6 +458,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const matched = allTeams.find(team => {
       const tId = (team.teamId || '').toLowerCase();
       const tName = (team.teamName || '').toLowerCase();
+      const pName = (team.projectName || '').toLowerCase();
       const leader = (team.leaderName || '').toLowerCase();
       const leaderPhone = (team.leaderPhone || '').toLowerCase();
       const leaderEmail = (team.leaderEmail || '').toLowerCase();
@@ -476,6 +467,7 @@ document.addEventListener('DOMContentLoaded', () => {
              tId.includes(clean) || 
              clean.includes(tName) || 
              tName.includes(clean) ||
+             (pName && (clean.includes(pName) || pName.includes(clean))) ||
              clean.includes(leader) ||
              (leaderPhone && clean.includes(leaderPhone)) ||
              (leaderEmail && clean.includes(leaderEmail));
@@ -501,20 +493,20 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTeamsTable() {
     const searchVal = searchTeams ? searchTeams.value.toLowerCase().trim() : '';
     const filterVal = filterStatus ? filterStatus.value : 'all';
-    const activeDayKey = getActiveDayKey();
-    const isAdmin = (role === 'eval_admin');
 
     let filtered = allTeams.filter(team => {
+      const pName = (team.projectName || '').toLowerCase();
       const matchSearch = 
         team.teamId.toLowerCase().includes(searchVal) ||
         team.teamName.toLowerCase().includes(searchVal) ||
+        pName.includes(searchVal) ||
         team.college.toLowerCase().includes(searchVal) ||
         (team.leaderName && team.leaderName.toLowerCase().includes(searchVal));
 
       if (!matchSearch) return false;
       if (filterVal === 'all') return true;
       
-      const isComplete = isEvaluationComplete(team, activeDayKey);
+      const isComplete = isEvaluationComplete(team, 'day1');
       if (filterVal === 'complete') return isComplete;
       if (filterVal === 'pending') return !isComplete;
 
@@ -530,44 +522,27 @@ document.addEventListener('DOMContentLoaded', () => {
           <div>No matching teams found.</div>
         </div>
       `;
-      if (teamsTbody) teamsTbody.innerHTML = `<tr><td colspan="8">${emptyHtml}</td></tr>`;
+      if (teamsTbody) teamsTbody.innerHTML = `<tr><td colspan="7">${emptyHtml}</td></tr>`;
       if (teamsMobileContainer) teamsMobileContainer.innerHTML = emptyHtml;
       return;
     }
 
     if (teamsTbody) {
       teamsTbody.innerHTML = filtered.map(team => {
-        const d1Total = team.evaluation?.day1?.total || 0;
-        const d2Total = team.evaluation?.day2?.total || 0;
-        const d3Total = team.evaluation?.day3?.total || 0;
-        const overall = team.evaluation?.overallTotal || 0;
-
-        let statusHtml = '';
-        if (activeDayKey) {
-          const done = isEvaluationComplete(team, activeDayKey);
-          statusHtml = done 
-            ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-            : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
-        }
-
-        const scoreCells = isAdmin ? `
-          <td><span class="text-info fw-bold">${d1Total}</span>/100</td>
-          <td><span class="text-warning fw-bold">${d2Total}</span>/100</td>
-          <td><span class="text-success fw-bold">${d3Total}</span>/100</td>
-          <td><strong class="text-purple" style="font-size: 15px;">${overall}</strong>/300</td>
-        ` : `
-          <td colspan="4" class="text-muted small"><i class="fa-solid fa-eye-slash me-1"></i>Hidden (Blind Evaluation)</td>
-        `;
+        const scoreVal = team.evaluation?.day1?.total || team.evaluation?.overallTotal || 0;
+        const done = isEvaluationComplete(team, 'day1');
+        const statusHtml = done 
+          ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
+          : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
 
         return `
           <tr>
             <td><strong class="font-outfit text-white">${team.teamId}</strong></td>
-            <td>
-              <div class="fw-bold text-cyan">${team.teamName}</div>
-              <small class="text-muted">${team.college}</small>
-            </td>
+            <td><div class="fw-bold text-white">${team.teamName}</div></td>
+            <td><div class="fw-bold text-cyan">${team.projectName || team.teamName}</div></td>
+            <td><small class="text-muted">${team.college}</small></td>
             <td>${team.leaderName || 'N/A'}</td>
-            ${scoreCells}
+            <td><span class="text-info fw-bold">${scoreVal}</span>/100</td>
             <td class="text-center">
               <div class="d-flex align-items-center justify-content-center gap-2">
                 ${statusHtml}
@@ -583,13 +558,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (teamsMobileContainer) {
       teamsMobileContainer.innerHTML = filtered.map(team => {
-        let statusHtml = '';
-        if (activeDayKey) {
-          const done = isEvaluationComplete(team, activeDayKey);
-          statusHtml = done 
-            ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
-            : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
-        }
+        const done = isEvaluationComplete(team, 'day1');
+        const statusHtml = done 
+          ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
+          : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
 
         return `
           <div class="mobile-team-card">
@@ -597,6 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <div>
                 <span class="badge bg-cyan text-dark font-outfit px-2.5 py-1 fw-bold mb-1">${team.teamId}</span>
                 <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${team.teamName}</h5>
+                <small class="text-cyan d-block fw-semibold mb-1" style="font-size: 13px;"><i class="fa-solid fa-lightbulb me-1"></i>Project: ${team.projectName || team.teamName}</small>
                 <small class="text-muted d-block">${team.college}</small>
                 <small class="text-info" style="font-size: 12px;"><i class="fa-solid fa-user me-1"></i>Leader: ${team.leaderName || 'N/A'}</small>
               </div>
@@ -638,6 +611,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let filtered = allTeams.filter(team => {
       if (!query) return true;
+      const pName = (team.projectName || '').toLowerCase();
       const leader = (team.leaderName || '').toLowerCase();
       const leaderEmail = (team.leaderEmail || '').toLowerCase();
       const m2 = (team.member2Name || '').toLowerCase();
@@ -650,6 +624,7 @@ document.addEventListener('DOMContentLoaded', () => {
       return (
         team.teamId.toLowerCase().includes(query) ||
         team.teamName.toLowerCase().includes(query) ||
+        pName.includes(query) ||
         leader.includes(query) ||
         leaderEmail.includes(query) ||
         m2.includes(query) || m2Reg.includes(query) ||
@@ -675,6 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div>
               <span class="badge bg-cyan text-dark font-outfit px-3 py-1 fw-bold mb-1">${team.teamId}</span>
               <h4 class="fw-bold text-white mb-0">${team.teamName}</h4>
+              <small class="text-cyan d-block fw-semibold" style="font-size: 13px;"><i class="fa-solid fa-lightbulb me-1"></i>Project: ${team.projectName || team.teamName}</small>
               <small class="text-muted"><i class="fa-solid fa-building-columns me-1"></i>${team.college}</small>
             </div>
             <button class="btn btn-sm btn-gradient-eval font-outfit px-3 btn-eval-team" data-id="${team._id}">
@@ -754,7 +730,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   function renderLeaderboard(data) {
-    const isAdmin = (role === 'eval_admin');
     if (!data || data.length === 0) {
       const emptyLeaderboard = `
         <div class="text-center text-muted py-5">
@@ -762,7 +737,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div>No leaderboard data available yet.</div>
         </div>
       `;
-      if (leaderboardTbody) leaderboardTbody.innerHTML = `<tr><td colspan="8">${emptyLeaderboard}</td></tr>`;
+      if (leaderboardTbody) leaderboardTbody.innerHTML = `<tr><td colspan="6">${emptyLeaderboard}</td></tr>`;
       if (leaderboardMobileContainer) leaderboardMobileContainer.innerHTML = emptyLeaderboard;
       return;
     }
@@ -775,22 +750,17 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (rank === 2) rankHtml = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
         else if (rank === 3) rankHtml = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
 
-        const scoreCells = isAdmin ? `
-          <td class="text-info font-outfit fw-bold">${entry.day1?.total || 0}</td>
-          <td class="text-warning font-outfit fw-bold">${entry.day2?.total || 0}</td>
-          <td class="text-success font-outfit fw-bold">${entry.day3?.total || 0}</td>
-          <td><span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0}</span></td>
-        ` : `
-          <td colspan="4" class="text-muted small"><i class="fa-solid fa-lock me-1"></i>Scores Hidden (Blind Grading)</td>
-        `;
+        const scoreVal = entry.day1?.total || entry.overallTotal || 0;
+        const projName = entry.teamId?.projectName || entry.teamId?.teamName || 'N/A';
 
         return `
           <tr>
             <td><strong class="font-outfit">${rankHtml}</strong></td>
             <td><span class="badge bg-dark text-white border border-secondary px-2.5 py-1.5">${entry.teamId?.teamId || 'N/A'}</span></td>
-            <td><strong class="text-cyan">${entry.teamId?.teamName || 'N/A'}</strong></td>
+            <td><strong class="text-white">${entry.teamId?.teamName || 'N/A'}</strong></td>
+            <td><strong class="text-cyan">${projName}</strong></td>
             <td><small class="text-muted">${entry.teamId?.college || 'N/A'}</small></td>
-            ${scoreCells}
+            <td><span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${scoreVal} / 100 Marks</span></td>
           </tr>
         `;
       }).join('');
@@ -804,11 +774,8 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (rank === 2) rankLabel = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
         else if (rank === 3) rankLabel = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
 
-        const mobileScoreText = isAdmin ? `
-          <span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${entry.overallTotal || 0} / 300</span>
-        ` : `
-          <span class="text-muted small"><i class="fa-solid fa-lock me-1"></i>Blind Grading</span>
-        `;
+        const scoreVal = entry.day1?.total || entry.overallTotal || 0;
+        const projName = entry.teamId?.projectName || entry.teamId?.teamName || 'N/A';
 
         return `
           <div class="mobile-team-card">
@@ -816,10 +783,11 @@ document.addEventListener('DOMContentLoaded', () => {
               <span class="font-outfit fw-bold text-warning" style="font-size: 1rem;">${rankLabel}</span>
               <span class="badge bg-dark text-white border border-secondary px-2.5 py-1">${entry.teamId?.teamId || 'N/A'}</span>
             </div>
-            <h5 class="fw-bold text-cyan mb-0" style="font-size: 1.05rem;">${entry.teamId?.teamName || 'N/A'}</h5>
+            <h5 class="fw-bold text-white mb-0" style="font-size: 1.05rem;">${entry.teamId?.teamName || 'N/A'}</h5>
+            <small class="text-cyan d-block fw-semibold mb-1" style="font-size: 13px;"><i class="fa-solid fa-lightbulb me-1"></i>Project: ${projName}</small>
             <small class="text-muted d-block mb-2">${entry.teamId?.college || 'N/A'}</small>
             <div class="d-flex justify-content-between align-items-center pt-2 border-top border-secondary">
-              ${mobileScoreText}
+              <span class="badge bg-purple text-dark font-outfit px-3 py-1.5 fw-bold" style="font-size: 13px;">${scoreVal} / 100 Marks</span>
             </div>
           </div>
         `;
@@ -838,12 +806,8 @@ document.addEventListener('DOMContentLoaded', () => {
     evalTeamId.value = mongoId;
     evalTeamDetails.textContent = `${currentSelectedTeam.teamId} | ${currentSelectedTeam.teamName}`;
 
-    if (role === 'evaluator1') activeModalRound = 'day1';
-    else if (role === 'evaluator2') activeModalRound = 'day2';
-    else if (role === 'evaluator3') activeModalRound = 'day3';
-    else activeModalRound = 'day1';
-
-    setupFormForDay(activeModalRound, currentSelectedTeam.evaluation);
+    activeModalRound = 'day1';
+    setupFormForDay('day1', currentSelectedTeam.evaluation);
 
     try {
       if (typeof evaluationModal.showModal === 'function') {
@@ -856,55 +820,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  roundSwitchBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      roundSwitchBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      activeModalRound = btn.getAttribute('data-round');
-      
-      if (currentSelectedTeam) {
-        setupFormForDay(activeModalRound, currentSelectedTeam.evaluation);
-      }
-    });
-  });
-
   function setupFormForDay(dayKey, currentEvaluation) {
-    roundSwitchBtns.forEach(btn => {
-      if (btn.getAttribute('data-round') === dayKey) btn.classList.add('active');
-      else btn.classList.remove('active');
-    });
-
-    if (dayKey === 'day1') {
-      evalDayTitle.innerHTML = '<i class="fa-solid fa-lightbulb me-1.5 text-warning"></i> Round 1: Ideation (15 Aug)';
+    if (evalDayTitle) {
+      evalDayTitle.innerHTML = '<i class="fa-solid fa-clipboard-check me-1.5 text-warning"></i> Project Evaluation (100 Marks)';
+    }
+    if (evalRoundDuration) {
       evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Pitch + 5 min Q&A)';
-    } else if (dayKey === 'day2') {
-      evalDayTitle.innerHTML = '<i class="fa-solid fa-gears me-1.5 text-cyan"></i> Round 2: Prototype (29 Aug)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 20 min/team (12 min Demo + 8 min Discussion)';
-    } else if (dayKey === 'day3') {
-      evalDayTitle.innerHTML = '<i class="fa-solid fa-trophy me-1.5 text-amber" style="color:#ffb703;"></i> Grand Finale: Demo (05 Sep)';
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 25 min/team (15 min Demo + 10 min Jury Q&A)';
     }
 
-    document.getElementById('criteria-day1-group').classList.add('d-none');
-    document.getElementById('criteria-day2-group').classList.add('d-none');
-    document.getElementById('criteria-day3-group').classList.add('d-none');
-    document.getElementById(`criteria-${dayKey}-group`).classList.remove('d-none');
+    const day1Group = document.getElementById('criteria-day1-group');
+    if (day1Group) day1Group.classList.remove('d-none');
 
-    const dayData = (currentEvaluation && currentEvaluation[dayKey]) || {};
-    evalFeedback.value = dayData.feedback || '';
+    const dayData = (currentEvaluation && (currentEvaluation.day1 || currentEvaluation)) || {};
+    if (evalFeedback) evalFeedback.value = dayData.feedback || '';
 
-    const isAuthorized = (role === 'eval_admin') || 
-      (role === 'evaluator1' && dayKey === 'day1') || 
-      (role === 'evaluator2' && dayKey === 'day2') || 
-      (role === 'evaluator3' && dayKey === 'day3');
-
-    const inputs = document.querySelectorAll(`.score-input`);
+    const inputs = document.querySelectorAll('.score-input');
     inputs.forEach(input => {
-      if (input.classList.contains(`${dayKey}-score`)) {
-        input.disabled = !isAuthorized;
-        const scoreKey = input.name;
-        input.value = dayData[scoreKey] || 0;
-      }
+      input.disabled = false;
+      const scoreKey = input.name;
+      input.value = dayData[scoreKey] || 0;
     });
 
     calculateLiveTotal();
@@ -961,7 +895,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mongoId = evalTeamId.value;
     const activeGroup = document.querySelector('.day-group:not(.d-none)');
-    const dayKey = activeGroup.id.replace('criteria-', '').replace('-group', '');
+    const dayKey = activeGroup ? activeGroup.id.replace('criteria-', '').replace('-group', '') : 'day1';
 
     const inputs = activeGroup.querySelectorAll('.score-input');
     const scores = {};
