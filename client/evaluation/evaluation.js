@@ -806,6 +806,11 @@ document.addEventListener('DOMContentLoaded', () => {
     evalTeamId.value = mongoId;
     evalTeamDetails.textContent = `${currentSelectedTeam.teamId} | ${currentSelectedTeam.teamName}`;
 
+    const evalProjectName = document.getElementById('eval-project-name');
+    if (evalProjectName) {
+      evalProjectName.value = currentSelectedTeam.projectName || '';
+    }
+
     activeModalRound = 'day1';
     setupFormForDay('day1', currentSelectedTeam.evaluation);
 
@@ -834,9 +839,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const dayData = (currentEvaluation && (currentEvaluation.day1 || currentEvaluation)) || {};
     if (evalFeedback) evalFeedback.value = dayData.feedback || '';
 
+    // Check if team is already evaluated
+    const isAlreadyEvaluated = isEvaluationComplete(currentSelectedTeam, 'day1');
+    const isAdmin = (role === 'eval_admin');
+
+    // Rule: Evaluator cannot change marks if once saved, but admin CAN secretly edit & update marks
+    const isEditable = (!isAlreadyEvaluated || isAdmin);
+
+    const evalProjectName = document.getElementById('eval-project-name');
+    if (evalProjectName) evalProjectName.disabled = !isEditable;
+
+    if (evalFeedback) evalFeedback.disabled = !isEditable;
+
+    const btnSaveEval = document.getElementById('btn-save-eval');
+    if (btnSaveEval) {
+      if (isEditable) {
+        btnSaveEval.classList.remove('d-none');
+        btnSaveEval.disabled = false;
+      } else {
+        btnSaveEval.classList.add('d-none');
+        btnSaveEval.disabled = true;
+      }
+    }
+
     const inputs = document.querySelectorAll('.score-input');
     inputs.forEach(input => {
-      input.disabled = false;
+      input.disabled = !isEditable;
       const scoreKey = input.name;
       input.value = dayData[scoreKey] || 0;
     });
@@ -897,6 +925,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeGroup = document.querySelector('.day-group:not(.d-none)');
     const dayKey = activeGroup ? activeGroup.id.replace('criteria-', '').replace('-group', '') : 'day1';
 
+    const evalProjectName = document.getElementById('eval-project-name');
+    const projNameVal = evalProjectName ? evalProjectName.value.trim() : '';
+
     const inputs = activeGroup.querySelectorAll('.score-input');
     const scores = {};
     inputs.forEach(input => {
@@ -916,6 +947,7 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify({
           teamId: mongoId,
           day: dayKey,
+          projectName: projNameVal,
           scores: scores,
           feedback: fbVal
         })

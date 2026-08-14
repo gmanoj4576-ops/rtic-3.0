@@ -92,10 +92,9 @@ exports.getTeams = async (req, res) => {
   }
 };
 
-// Submit/Update marks
 exports.submitEvaluation = async (req, res) => {
   try {
-    const { teamId, day = 'day1', scores, feedback } = req.body;
+    const { teamId, day = 'day1', scores, feedback, projectName } = req.body;
     const { role, username } = req.evaluator;
 
     if (!teamId || !scores) {
@@ -103,6 +102,29 @@ exports.submitEvaluation = async (req, res) => {
     }
 
     const evaluationDay = day || 'day1';
+
+    // Check if team exists and update projectName if provided
+    const team = await Team.findById(teamId);
+    if (!team) {
+      return res.status(404).json({ message: 'Team not found' });
+    }
+
+    if (projectName && projectName.trim()) {
+      team.projectName = projectName.trim();
+      await team.save();
+    }
+
+    // Upsert evaluation document
+    let evaluation = await Evaluation.findOne({ teamId });
+    if (!evaluation) {
+      evaluation = new Evaluation({ teamId });
+    }
+
+    // Lock rule: If already evaluated and user is NOT admin, forbid modification
+    const existingDayEval = evaluation[evaluationDay];
+    if (existingDayEval && existingDayEval.evaluatedBy && role !== 'eval_admin') {
+      return res.status(403).json({ message: 'Marks once submitted cannot be modified.' });
+    }
 
     // Define validation criteria (out of 100 marks total)
     const criteria = {
@@ -126,18 +148,6 @@ exports.submitEvaluation = async (req, res) => {
         });
       }
       updatedScores[key] = score;
-    }
-
-    // Check if team exists
-    const teamExists = await Team.exists({ _id: teamId });
-    if (!teamExists) {
-      return res.status(404).json({ message: 'Team not found' });
-    }
-
-    // Upsert evaluation document
-    let evaluation = await Evaluation.findOne({ teamId });
-    if (!evaluation) {
-      evaluation = new Evaluation({ teamId });
     }
 
     // Set marks, feedback, evaluator, and timestamp

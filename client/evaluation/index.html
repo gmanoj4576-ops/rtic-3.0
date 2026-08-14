@@ -1015,10 +1015,27 @@
     <form id="evaluation-form">
       <input type="hidden" id="eval-team-id">
       
+      <!-- Top Project Name Input Box -->
+      <div class="glass-card p-3 mb-3 border-cyan border-opacity-25" style="background: rgba(0, 212, 255, 0.04);">
+        <label for="eval-project-name" class="form-label text-cyan font-outfit fw-bold mb-1 fs-6">
+          <i class="fa-solid fa-lightbulb me-1.5"></i>Project Name
+        </label>
+        <input type="text" id="eval-project-name" class="form-control bg-dark border-secondary text-white font-outfit" placeholder="Enter team project name..." required>
+        <div class="form-text text-muted small mt-1">
+          <i class="fa-solid fa-circle-info me-1 text-cyan"></i>This project name will automatically be shown in all tables, cards, and future rounds.
+        </div>
+      </div>
+
       <!-- Duration display -->
       <div class="eval-duration-box d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <span class="font-outfit small text-white fw-bold" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team</span>
         <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-clipboard-check me-1"></i> Project Evaluation (100 Marks)</span>
+      </div>
+
+      <!-- Submission Lock Notice -->
+      <div id="eval-lock-notice" class="alert alert-warning py-2 px-3 small font-outfit d-flex align-items-center gap-2 mb-3 border-0 bg-warning bg-opacity-10 text-warning rounded-3" style="border: 1px solid rgba(255, 183, 3, 0.3) !important;">
+        <i class="fa-solid fa-lock fs-6 text-warning"></i>
+        <span id="eval-lock-notice-text">Notice: Once marks are submitted, they cannot be changed or modified.</span>
       </div>
 
       <!-- CRITERIA SECTION -->
