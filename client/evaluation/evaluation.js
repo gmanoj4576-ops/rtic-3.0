@@ -907,6 +907,17 @@ document.addEventListener('DOMContentLoaded', () => {
     calculateLiveTotal();
   });
 
+  // Auto scroll focused input into view on mobile devices (prevents keyboard cutoff)
+  if (evaluationModal) {
+    evaluationModal.addEventListener('focusin', (e) => {
+      if (e.target && (e.target.classList.contains('score-input') || e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+        setTimeout(() => {
+          e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 250);
+      }
+    });
+  }
+
   function closeModal() {
     try {
       if (typeof evaluationModal.close === 'function') evaluationModal.close();
