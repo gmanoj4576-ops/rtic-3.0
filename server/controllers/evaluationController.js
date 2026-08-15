@@ -69,7 +69,7 @@ exports.getTeams = async (req, res) => {
     // Merge evaluations with team objects
     const result = approvedTeams.map(team => {
       const evaluation = evalMap[team._id.toString()] || {
-        day1: { total: 0, feedback: '', problemClarity: 0, innovation: 0, feasibility: 0, literatureSurvey: 0, presentation: 0 },
+        day1: { total: 0, feedback: '', problemIdentification: 0, innovationCreativity: 0, technicalFeasibility: 0, literatureSurvey: 0, proposedMethodology: 0, socialImpact: 0, presentationSkills: 0 },
         overallTotal: 0
       };
       
@@ -128,11 +128,13 @@ exports.submitEvaluation = async (req, res) => {
 
     // Define validation criteria (out of 100 marks total)
     const criteria = {
-      problemClarity: 20,
-      literatureSurvey: 20,
-      innovation: 20,
-      feasibility: 20,
-      presentation: 20
+      problemIdentification: 20,
+      innovationCreativity: 20,
+      technicalFeasibility: 15,
+      literatureSurvey: 10,
+      proposedMethodology: 15,
+      socialImpact: 10,
+      presentationSkills: 10
     };
 
     const updatedScores = {};

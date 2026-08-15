@@ -1,11 +1,13 @@
 const mongoose = require('mongoose');
 
 const day1Schema = new mongoose.Schema({
-  problemClarity: { type: Number, default: 0, min: 0, max: 20 },
-  innovation: { type: Number, default: 0, min: 0, max: 20 },
-  feasibility: { type: Number, default: 0, min: 0, max: 20 },
-  designLayout: { type: Number, default: 0, min: 0, max: 20 },
-  presentation: { type: Number, default: 0, min: 0, max: 20 },
+  problemIdentification: { type: Number, default: 0, min: 0, max: 20 },
+  innovationCreativity: { type: Number, default: 0, min: 0, max: 20 },
+  technicalFeasibility: { type: Number, default: 0, min: 0, max: 15 },
+  literatureSurvey: { type: Number, default: 0, min: 0, max: 10 },
+  proposedMethodology: { type: Number, default: 0, min: 0, max: 15 },
+  socialImpact: { type: Number, default: 0, min: 0, max: 10 },
+  presentationSkills: { type: Number, default: 0, min: 0, max: 10 },
   total: { type: Number, default: 0 },
   feedback: { type: String, default: '' },
   evaluatedBy: { type: String },
@@ -65,11 +67,13 @@ const evaluationSchema = new mongoose.Schema({
 evaluationSchema.pre('save', function (next) {
   if (this.day1) {
     this.day1.total = 
-      (this.day1.problemClarity || 0) +
-      (this.day1.innovation || 0) +
-      (this.day1.feasibility || 0) +
-      (this.day1.designLayout || 0) +
-      (this.day1.presentation || 0);
+      (this.day1.problemIdentification || 0) +
+      (this.day1.innovationCreativity || 0) +
+      (this.day1.technicalFeasibility || 0) +
+      (this.day1.literatureSurvey || 0) +
+      (this.day1.proposedMethodology || 0) +
+      (this.day1.socialImpact || 0) +
+      (this.day1.presentationSkills || 0);
   }
 
   if (this.day2) {
