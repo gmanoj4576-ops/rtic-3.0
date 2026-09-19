@@ -875,7 +875,7 @@ document.addEventListener('DOMContentLoaded', () => {
       evalDayTitle.innerHTML = '<i class="fa-solid fa-clipboard-check me-1.5 text-warning"></i> Round 2 Evaluation (100 Marks)';
     }
     if (evalRoundDuration) {
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (Prototype Demo + Integration & UI/UX)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-calendar-days me-1 text-cyan"></i> Date: 20th September 2026 (Round 2)';
     }
 
     const day2Group = document.getElementById('criteria-day2-group');

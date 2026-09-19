@@ -83,7 +83,7 @@ app.use('/api/evaluation', require('./routes/evaluationRoutes'));
 app.use(express.static(path.join(__dirname, '../client')));
 
 // Dedicated route for evaluation portal
-app.get(['/evaluation', '/evaluation/'], (req, res) => {
+app.get(['/evaluation', '/evaluation/', '/evaluator', '/evaluator/'], (req, res) => {
   res.sendFile(path.join(__dirname, '../client/evaluation/index.html'));
 });
 

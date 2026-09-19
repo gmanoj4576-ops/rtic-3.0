@@ -1,6 +1,10 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "http://localhost:5000/api/:path*" },
-    { "source": "/uploads/:path*", "destination": "http://localhost:5000/uploads/:path*" }
+    { "source": "/api/(.*)", "destination": "/server/server.js" },
+    { "source": "/evaluation/(.*)", "destination": "/client/evaluation/index.html" },
+    { "source": "/evaluation", "destination": "/client/evaluation/index.html" },
+    { "source": "/evaluator/(.*)", "destination": "/client/evaluation/index.html" },
+    { "source": "/evaluator", "destination": "/client/evaluation/index.html" },
+    { "source": "/(.*)", "destination": "/client/$1" }
   ]
 }
