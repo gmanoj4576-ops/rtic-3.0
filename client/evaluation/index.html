@@ -977,9 +977,20 @@
         <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
           <div>
             <h3 class="font-outfit fw-bold text-white mb-1">
-              <i class="fa-solid fa-trophy text-amber me-2" style="color: #ffb703;"></i>Live Leaderboard
+              <i class="fa-solid fa-trophy text-amber me-2" style="color: #ffb703;"></i><span id="leaderboard-title-text">Round 2 Leaderboard</span>
             </h3>
-            <p class="text-muted small mb-0">Rankings based on overall project evaluation scores</p>
+            <p class="text-muted small mb-0" id="leaderboard-subtitle-text">Rankings based on Round 2 evaluation scores</p>
+          </div>
+          <!-- Super Admin Only Round Selection Toggle -->
+          <div id="leaderboard-round-toggle-container" class="d-none">
+            <div class="btn-group font-outfit" role="group" aria-label="Leaderboard Round Selection">
+              <button type="button" class="btn btn-sm btn-outline-cyan active btn-leaderboard-round" data-round="day2">
+                <i class="fa-solid fa-layer-group me-1"></i> Round 2 Leaderboard
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-warning btn-leaderboard-round" data-round="day1">
+                <i class="fa-solid fa-lock me-1"></i> Round 1 Leaderboard <span class="badge bg-danger ms-1" style="font-size: 9px;">Super Admin Only</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -1130,7 +1141,7 @@
       <!-- Duration display -->
       <div class="eval-duration-box d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
         <span class="font-outfit small text-white fw-bold" id="eval-round-duration"><i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team</span>
-        <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-clipboard-check me-1"></i> Project Evaluation (100 Marks)</span>
+        <span class="round-badge-glow" id="eval-day-title"><i class="fa-solid fa-clipboard-check me-1"></i> Round 2 Evaluation (100 Marks)</span>
       </div>
 
       <!-- Submission Lock Notice -->
@@ -1142,18 +1153,33 @@
       <!-- CRITERIA SECTION -->
       <div id="criteria-container">
         
-        <!-- Single Evaluation Round -->
-        <div id="criteria-day1-group" class="day-group">
+        <!-- Round 2 Evaluation Criteria -->
+        <div id="criteria-day2-group" class="day-group">
           <div class="criteria-card">
             <div class="criteria-header">
-              <span class="criteria-title">Problem Identification & Relevance to Rural Needs</span>
+              <span class="criteria-title">Technical Execution & Prototype Development</span>
+              <span class="criteria-max-marks">Max 30 Marks</span>
+            </div>
+            <div class="criteria-body-flex">
+              <small class="text-muted text-break criteria-desc-text">Working prototype completeness, technical execution, algorithm/hardware quality, implementation depth.</small>
+              <div class="score-stepper-group ms-auto">
+                <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
+                <input type="number" name="technicalExecution" min="0" max="30" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
+                <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="criteria-card">
+            <div class="criteria-header">
+              <span class="criteria-title">UI/UX Design & User Experience</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
             <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Problem clarity, target rural community need, depth of analysis.</small>
+              <small class="text-muted text-break criteria-desc-text">User interface design quality, accessibility, usability, visual aesthetics, and user experience.</small>
               <div class="score-stepper-group ms-auto">
                 <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="problemIdentification" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
+                <input type="number" name="uiux" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
                 <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
               </div>
             </div>
@@ -1161,14 +1187,14 @@
 
           <div class="criteria-card">
             <div class="criteria-header">
-              <span class="criteria-title">Innovation & Creativity</span>
+              <span class="criteria-title">Development Progress & Implementation Effort</span>
               <span class="criteria-max-marks">Max 20 Marks</span>
             </div>
             <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Novelty of proposed idea, creative problem-solving approach.</small>
+              <small class="text-muted text-break criteria-desc-text">Milestones reached during hackathon/event, dedication, feature completion rate.</small>
               <div class="score-stepper-group ms-auto">
                 <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="innovationCreativity" min="0" max="20" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
+                <input type="number" name="progressEffort" min="0" max="20" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
                 <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
               </div>
             </div>
@@ -1176,14 +1202,14 @@
 
           <div class="criteria-card">
             <div class="criteria-header">
-              <span class="criteria-title">Technical Feasibility</span>
+              <span class="criteria-title">System Integration & Code Quality</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
             <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Practical implementation feasibility, system architecture, tech stack.</small>
+              <small class="text-muted text-break criteria-desc-text">API integration, database connect, architecture modularity, code quality, error handling.</small>
               <div class="score-stepper-group ms-auto">
                 <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="technicalFeasibility" min="0" max="15" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
+                <input type="number" name="integration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
                 <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
               </div>
             </div>
@@ -1191,59 +1217,14 @@
 
           <div class="criteria-card">
             <div class="criteria-header">
-              <span class="criteria-title">Literature Survey / Existing Solutions</span>
-              <span class="criteria-max-marks">Max 10 Marks</span>
-            </div>
-            <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Prior work survey, gap identification, technical literature review.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="literatureSurvey" min="0" max="10" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Proposed Methodology</span>
+              <span class="criteria-title">Team Collaboration & Execution</span>
               <span class="criteria-max-marks">Max 15 Marks</span>
             </div>
             <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Technical workflow, methodology execution plan, system design.</small>
+              <small class="text-muted text-break criteria-desc-text">Team teamwork, division of tasks, problem-solving under time constraints, live demo response.</small>
               <div class="score-stepper-group ms-auto">
                 <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="proposedMethodology" min="0" max="15" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Expected Social Impact</span>
-              <span class="criteria-max-marks">Max 10 Marks</span>
-            </div>
-            <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Potential impact on rural community, sustainability, and social value.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="socialImpact" min="0" max="10" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
-                <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
-              </div>
-            </div>
-          </div>
-
-          <div class="criteria-card">
-            <div class="criteria-header">
-              <span class="criteria-title">Presentation & Communication Skills</span>
-              <span class="criteria-max-marks">Max 10 Marks</span>
-            </div>
-            <div class="criteria-body-flex">
-              <small class="text-muted text-break criteria-desc-text">Pitch presentation quality, communication, slides, and Q&A answers.</small>
-              <div class="score-stepper-group ms-auto">
-                <button type="button" class="btn btn-step-score" data-action="dec" aria-label="Decrease score"><span class="step-btn-txt">−</span></button>
-                <input type="number" name="presentationSkills" min="0" max="10" required class="form-control score-input day1-score" value="0" inputmode="numeric" pattern="[0-9]*">
+                <input type="number" name="collaboration" min="0" max="15" required class="form-control score-input day2-score" value="0" inputmode="numeric" pattern="[0-9]*">
                 <button type="button" class="btn btn-step-score" data-action="inc" aria-label="Increase score"><span class="step-btn-txt">+</span></button>
               </div>
             </div>

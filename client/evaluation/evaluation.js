@@ -71,7 +71,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let allTeams = [];
   let currentSort = 'overall';
   let currentSelectedTeam = null;
-  let activeModalRound = 'day1';
+  let activeModalRound = 'day2';
+  let currentLeaderboardRound = 'day2';
   let html5QrcodeScanner = null;
   let isScannerRunning = false;
 
@@ -126,6 +127,17 @@ document.addEventListener('DOMContentLoaded', () => {
       dashboardSection.classList.remove('d-none');
       if (userDisplay) userDisplay.textContent = username;
       if (userRoleBadge) userRoleBadge.textContent = getRoleLabel(role);
+
+      // Show Round 1 Leaderboard toggle ONLY for Super Admin (eval_admin)
+      const roundToggleContainer = document.getElementById('leaderboard-round-toggle-container');
+      if (roundToggleContainer) {
+        if (role === 'eval_admin') {
+          roundToggleContainer.classList.remove('d-none');
+        } else {
+          roundToggleContainer.classList.add('d-none');
+        }
+      }
+
       loadDashboardData();
     } else {
       loginSection.classList.remove('d-none');
@@ -262,25 +274,29 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  async function loadLeaderboard() {
+  async function loadLeaderboard(round = currentLeaderboardRound) {
     try {
-      const res = await fetch(`/api/evaluation/leaderboard`, {
+      const res = await fetch(`/api/evaluation/leaderboard?round=${round}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      if (!res.ok) throw new Error('Failed to fetch leaderboard data');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.message || 'Failed to fetch leaderboard data');
+      }
       const leaderboardData = await res.json();
-      renderLeaderboard(leaderboardData);
+      renderLeaderboard(leaderboardData, round);
     } catch (err) {
       console.error(err);
+      showToast(err.message, 'danger');
     }
   }
 
   function getActiveDayKey() {
-    return 'day1';
+    return 'day2';
   }
 
-  function isEvaluationComplete(team, dayKey = 'day1') {
-    const scores = team.evaluation?.[dayKey] || team.evaluation;
+  function isEvaluationComplete(team, dayKey = 'day2') {
+    const scores = team.evaluation?.[dayKey];
     return !!(scores && (scores.evaluatedBy || scores.total > 0));
   }
 
@@ -289,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let completeCount = 0;
 
     allTeams.forEach(team => {
-      if (isEvaluationComplete(team, 'day1')) completeCount++;
+      if (isEvaluationComplete(team, 'day2')) completeCount++;
       else pendingCount++;
     });
 
@@ -358,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     homeTeamsList.innerHTML = filtered.map(team => {
-      const done = isEvaluationComplete(team, 'day1');
+      const done = isEvaluationComplete(team, 'day2');
       const statusHtml = done 
         ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
         : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
@@ -506,7 +522,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!matchSearch) return false;
       if (filterVal === 'all') return true;
       
-      const isComplete = isEvaluationComplete(team, 'day1');
+      const isComplete = isEvaluationComplete(team, 'day2');
       if (filterVal === 'complete') return isComplete;
       if (filterVal === 'pending') return !isComplete;
 
@@ -529,8 +545,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (teamsTbody) {
       teamsTbody.innerHTML = filtered.map(team => {
-        const scoreVal = team.evaluation?.day1?.total || team.evaluation?.overallTotal || 0;
-        const done = isEvaluationComplete(team, 'day1');
+        const scoreVal = team.evaluation?.day2?.total || 0;
+        const done = isEvaluationComplete(team, 'day2');
         const statusHtml = done 
           ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
           : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
@@ -558,7 +574,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (teamsMobileContainer) {
       teamsMobileContainer.innerHTML = filtered.map(team => {
-        const done = isEvaluationComplete(team, 'day1');
+        const done = isEvaluationComplete(team, 'day2');
         const statusHtml = done 
           ? `<span class="badge-status complete"><i class="fa-solid fa-circle-check me-1"></i>Graded</span>`
           : `<span class="badge-status pending"><i class="fa-solid fa-clock me-1"></i>Pending</span>`;
@@ -719,22 +735,51 @@ document.addEventListener('DOMContentLoaded', () => {
     openEvaluationModal(btn.getAttribute('data-id'));
   });
 
-  // --- LEADERBOARD ---
+  // --- LEADERBOARD & SUPER ADMIN ROUND TOGGLE ---
+  const leaderboardRoundBtns = document.querySelectorAll('.btn-leaderboard-round');
+  leaderboardRoundBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      leaderboardRoundBtns.forEach(b => b.classList.remove('active', 'btn-outline-cyan', 'btn-outline-warning'));
+      btn.classList.add('active');
+      
+      const selectedRound = btn.getAttribute('data-round');
+      if (selectedRound === 'day1') {
+        btn.classList.add('btn-outline-warning');
+      } else {
+        btn.classList.add('btn-outline-cyan');
+      }
+      
+      currentLeaderboardRound = selectedRound;
+      const titleText = document.getElementById('leaderboard-title-text');
+      const subtitleText = document.getElementById('leaderboard-subtitle-text');
+      
+      if (selectedRound === 'day1') {
+        if (titleText) titleText.textContent = 'Round 1 Leaderboard (Super Admin View)';
+        if (subtitleText) subtitleText.textContent = 'Archived rankings from Round 1 evaluation';
+      } else {
+        if (titleText) titleText.textContent = 'Round 2 Leaderboard';
+        if (subtitleText) subtitleText.textContent = 'Live rankings based on Round 2 evaluation scores';
+      }
+      
+      loadLeaderboard(selectedRound);
+    });
+  });
+
   leaderboardBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       leaderboardBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       currentSort = btn.getAttribute('data-sort');
-      loadLeaderboard();
+      loadLeaderboard(currentLeaderboardRound);
     });
   });
 
-  function renderLeaderboard(data) {
+  function renderLeaderboard(data, round = currentLeaderboardRound) {
     if (!data || data.length === 0) {
       const emptyLeaderboard = `
         <div class="text-center text-muted py-5">
           <i class="fa-solid fa-trophy fa-2x mb-2 text-cyan"></i>
-          <div>No leaderboard data available yet.</div>
+          <div>No leaderboard data available yet for ${round === 'day1' ? 'Round 1' : 'Round 2'}.</div>
         </div>
       `;
       if (leaderboardTbody) leaderboardTbody.innerHTML = `<tr><td colspan="6">${emptyLeaderboard}</td></tr>`;
@@ -750,7 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (rank === 2) rankHtml = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
         else if (rank === 3) rankHtml = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
 
-        const scoreVal = entry.day1?.total || entry.overallTotal || 0;
+        const scoreVal = (round === 'day1') ? (entry.day1?.total || 0) : (entry.day2?.total || 0);
         const projName = entry.teamId?.projectName || entry.teamId?.teamName || 'N/A';
 
         return `
@@ -774,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (rank === 2) rankLabel = `<i class="fa-solid fa-medal text-secondary me-1"></i> Rank 2`;
         else if (rank === 3) rankLabel = `<i class="fa-solid fa-medal me-1" style="color:#cd7f32;"></i> Rank 3`;
 
-        const scoreVal = entry.day1?.total || entry.overallTotal || 0;
+        const scoreVal = (round === 'day1') ? (entry.day1?.total || 0) : (entry.day2?.total || 0);
         const projName = entry.teamId?.projectName || entry.teamId?.teamName || 'N/A';
 
         return `
@@ -811,8 +856,8 @@ document.addEventListener('DOMContentLoaded', () => {
       evalProjectName.value = currentSelectedTeam.projectName || '';
     }
 
-    activeModalRound = 'day1';
-    setupFormForDay('day1', currentSelectedTeam.evaluation);
+    activeModalRound = 'day2';
+    setupFormForDay('day2', currentSelectedTeam.evaluation);
 
     try {
       if (typeof evaluationModal.showModal === 'function') {
@@ -827,20 +872,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function setupFormForDay(dayKey, currentEvaluation) {
     if (evalDayTitle) {
-      evalDayTitle.innerHTML = '<i class="fa-solid fa-clipboard-check me-1.5 text-warning"></i> Project Evaluation (100 Marks)';
+      evalDayTitle.innerHTML = '<i class="fa-solid fa-clipboard-check me-1.5 text-warning"></i> Round 2 Evaluation (100 Marks)';
     }
     if (evalRoundDuration) {
-      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (10 min Pitch + 5 min Q&A)';
+      evalRoundDuration.innerHTML = '<i class="fa-solid fa-clock me-1 text-cyan"></i>Duration: 15 min/team (Prototype Demo + Integration & UI/UX)';
     }
 
-    const day1Group = document.getElementById('criteria-day1-group');
-    if (day1Group) day1Group.classList.remove('d-none');
+    const day2Group = document.getElementById('criteria-day2-group');
+    if (day2Group) day2Group.classList.remove('d-none');
 
-    const dayData = (currentEvaluation && (currentEvaluation.day1 || currentEvaluation)) || {};
+    const dayData = (currentEvaluation && (currentEvaluation.day2 || currentEvaluation)) || {};
     if (evalFeedback) evalFeedback.value = dayData.feedback || '';
 
-    // Check if team is already evaluated
-    const isAlreadyEvaluated = isEvaluationComplete(currentSelectedTeam, 'day1');
+    // Check if team is already evaluated for Round 2
+    const isAlreadyEvaluated = isEvaluationComplete(currentSelectedTeam, 'day2');
     const isAdmin = (role === 'eval_admin');
 
     // Rule: Evaluator cannot change marks if once saved, but admin CAN secretly edit & update marks
@@ -934,7 +979,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const mongoId = evalTeamId.value;
     const activeGroup = document.querySelector('.day-group:not(.d-none)');
-    const dayKey = activeGroup ? activeGroup.id.replace('criteria-', '').replace('-group', '') : 'day1';
+    const dayKey = activeGroup ? activeGroup.id.replace('criteria-', '').replace('-group', '') : 'day2';
 
     const evalProjectName = document.getElementById('eval-project-name');
     const projNameVal = evalProjectName ? evalProjectName.value.trim() : '';

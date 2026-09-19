@@ -70,6 +70,7 @@ exports.getTeams = async (req, res) => {
     const result = approvedTeams.map(team => {
       const evaluation = evalMap[team._id.toString()] || {
         day1: { total: 0, feedback: '', problemIdentification: 0, innovationCreativity: 0, technicalFeasibility: 0, literatureSurvey: 0, proposedMethodology: 0, socialImpact: 0, presentationSkills: 0 },
+        day2: { total: 0, feedback: '', technicalExecution: 0, uiux: 0, progressEffort: 0, integration: 0, collaboration: 0 },
         overallTotal: 0
       };
       
@@ -94,14 +95,14 @@ exports.getTeams = async (req, res) => {
 
 exports.submitEvaluation = async (req, res) => {
   try {
-    const { teamId, day = 'day1', scores, feedback, projectName } = req.body;
+    const { teamId, day = 'day2', scores, feedback, projectName } = req.body;
     const { role, username } = req.evaluator;
 
     if (!teamId || !scores) {
       return res.status(400).json({ message: 'Missing required parameters' });
     }
 
-    const evaluationDay = day || 'day1';
+    const evaluationDay = day || 'day2';
 
     // Check if team exists and update projectName if provided
     const team = await Team.findById(teamId);
@@ -126,8 +127,8 @@ exports.submitEvaluation = async (req, res) => {
       return res.status(403).json({ message: 'Marks once submitted cannot be modified.' });
     }
 
-    // Define validation criteria (out of 100 marks total)
-    const criteria = {
+    // Define validation criteria per day (out of 100 marks total)
+    const day1Criteria = {
       problemIdentification: 20,
       innovationCreativity: 20,
       technicalFeasibility: 15,
@@ -137,6 +138,15 @@ exports.submitEvaluation = async (req, res) => {
       presentationSkills: 10
     };
 
+    const day2Criteria = {
+      technicalExecution: 30,
+      uiux: 20,
+      progressEffort: 20,
+      integration: 15,
+      collaboration: 15
+    };
+
+    const criteria = evaluationDay === 'day1' ? day1Criteria : day2Criteria;
     const updatedScores = {};
 
     // Validate marks limits
@@ -175,9 +185,21 @@ exports.submitEvaluation = async (req, res) => {
 // Retrieve Leaderboard sorted by total marks
 exports.getLeaderboard = async (req, res) => {
   try {
+    const round = req.query.round || 'day2';
+    const { role } = req.evaluator;
+
+    // Access restriction: Round 1 leaderboard is ONLY visible to Super Admin (eval_admin)
+    if ((round === 'day1' || round === '1') && role !== 'eval_admin') {
+      return res.status(403).json({ message: 'Round 1 Leaderboard is restricted to Super Admin only.' });
+    }
+
+    const sortOption = (round === 'day1' || round === '1')
+      ? { 'day1.total': -1, overallTotal: -1 }
+      : { 'day2.total': -1, overallTotal: -1 };
+
     const leaderboard = await Evaluation.find({})
       .populate('teamId', 'teamId teamName projectName college department status')
-      .sort({ overallTotal: -1, 'day1.total': -1 });
+      .sort(sortOption);
 
     // Filter out evaluations where team status is not approved, just in case
     const filteredLeaderboard = leaderboard.filter(ev => ev.teamId && ev.teamId.status === 'approved');
